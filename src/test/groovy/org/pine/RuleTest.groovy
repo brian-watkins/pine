@@ -9,8 +9,8 @@ class RuleTest {
     public void itAddsAndAppliesAJUnitClassRuleOnAField () {
         String script = '''
 import groovy.transform.*
-import SpecScript
-import FunRule
+import org.pine.SpecScript
+import org.pine.testHelpers.FunRule
 import org.junit.ClassRule
 
 @BaseScript SpecScript spec
@@ -30,7 +30,7 @@ it 'finds the rule variable', {
     public void itAddsAndAppliesAJUnitClassRuleOnAMethod () {
         String script = '''
 import groovy.transform.*
-import bw.funSpec.*
+import org.pine.*
 import org.junit.*
 import org.junit.runners.model.*
 import org.junit.runner.*
@@ -64,8 +64,8 @@ it 'finds the variable set by the rule', {
     public void itAddsAndAppliesAJUnitRuleOnAField () {
         String script = '''
 import groovy.transform.*
-import SpecScript
-import FunRule
+import org.pine.SpecScript
+import org.pine.testHelpers.FunRule
 import org.junit.Rule
 
 @BaseScript SpecScript spec
@@ -85,7 +85,7 @@ it 'finds the rule variable', {
     public void itAddsAndAppliesAJUnitRuleOnAMethod () {
         String script = '''
 import groovy.transform.*
-import bw.funSpec.*
+import org.pine.*
 import org.junit.*
 import org.junit.runners.model.*
 import org.junit.runner.*
@@ -118,8 +118,8 @@ it 'finds the variable set by the rule', {
     public void itAddsAndAppliesAJUnitMethodRuleOnAField () {
         String script = '''
 import groovy.transform.*
-import SpecScript
-import FunMethodRule
+import org.pine.SpecScript
+import org.pine.testHelpers.FunMethodRule
 import org.junit.Rule
 
 @BaseScript SpecScript spec
@@ -139,7 +139,7 @@ it 'finds the rule variable', {
     public void itAddsAndAppliesAJUnitMethodRuleOnAMethod () {
         String script = '''
 import groovy.transform.*
-import bw.funSpec.*
+import org.pine.*
 import org.junit.*
 import org.junit.runners.model.*
 import org.junit.runner.*

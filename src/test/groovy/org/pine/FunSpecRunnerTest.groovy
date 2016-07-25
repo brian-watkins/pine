@@ -15,9 +15,7 @@ class FunSpecRunnerTest {
     @Before
     void setUp() {
         String script = '''
-package bw.funSpec
-
-@groovy.transform.BaseScript SpecScript spec
+@groovy.transform.BaseScript org.pine.SpecScript spec
 
 it 'understands basic arithmetic', {
     assert 1 == 0

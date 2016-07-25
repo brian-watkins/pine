@@ -9,7 +9,7 @@ class SpecClassTest {
     public void itGetsTheSpecClassName () {
         SpecClass specClass = new SpecClass(MyTestSpecScriptClass.class)
 
-        assert specClass.getName() == 'SpecClassTest$MyTestSpecScriptClass'
+        assert specClass.getName() == 'org.pine.SpecClassTest$MyTestSpecScriptClass'
     }
 
     @Test

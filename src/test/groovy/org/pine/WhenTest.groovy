@@ -13,7 +13,7 @@ class WhenTest {
     @Test
     public void itNamesSpecsAccordingToTheirWhenBlock() {
         String script = '''
-@groovy.transform.BaseScript SpecScript spec
+@groovy.transform.BaseScript org.pine.SpecScript spec
 
 it 'always works', {
     assert 1 == 1

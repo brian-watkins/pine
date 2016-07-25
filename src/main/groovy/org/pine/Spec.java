@@ -9,5 +9,5 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.LOCAL_VARIABLE, ElementType.TYPE})
-@GroovyASTTransformationClass({"SpecAnnotationTransformation"})
+@GroovyASTTransformationClass({"org.pine.SpecAnnotationTransformation"})
 public @interface Spec { }

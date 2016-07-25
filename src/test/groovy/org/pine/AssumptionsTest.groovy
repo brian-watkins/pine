@@ -13,7 +13,7 @@ class AssumptionsTest {
     @Before
     void setUp() {
         def script = '''
-@groovy.transform.BaseScript SpecScript spec
+@groovy.transform.BaseScript org.pine.SpecScript spec
 
 int someNumber = 0
 int anotherNumber = 1

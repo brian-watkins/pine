@@ -13,9 +13,9 @@ class SpecTransformationTest {
     @Before
     public void setUp() {
         String script = '''
-@groovy.transform.BaseScript SpecScript spec
+@groovy.transform.BaseScript org.pine.SpecScript spec
 
-@Spec describing = "Annotations Test"
+@org.pine.Spec describing = "Annotations Test"
 
 it 'does stuff', {
   assert 1 == 1

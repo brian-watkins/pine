@@ -27,7 +27,7 @@ public class SpecAnnotationTransformation extends AbstractASTTransformation {
         DeclarationExpression declarationExpression = (DeclarationExpression) astNodes[1]
         addProperty(parentClass, "specName", String.class, declarationExpression.getRightExpression())
     }
-    
+
     private void addProperty(ClassNode cNode, String propertyName, Class propertyType, Expression initialValue) {
         FieldNode field = new FieldNode(
                 propertyName,

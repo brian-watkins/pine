@@ -13,7 +13,7 @@ class IntegrationTest {
     @Test
     public void itRunsAFailingTest () {
         String script = '''
-@groovy.transform.BaseScript SpecScript spec
+@groovy.transform.BaseScript org.pine.SpecScript spec
 
 it 'understands basic arithmetic', {
     assert 1 == 0
@@ -34,7 +34,7 @@ it 'understands basic arithmetic', {
     @Test
     public void itRunsASuccessfulTest() {
         String script = '''
-@groovy.transform.BaseScript SpecScript spec
+@groovy.transform.BaseScript org.pine.SpecScript spec
 
 name = 'blah'
 
@@ -48,7 +48,7 @@ it 'understands basic arithmetic', {
     @Test
     public void itMakesAssumptionsUsedInTests() {
         String script = '''
-@groovy.transform.BaseScript SpecScript spec
+@groovy.transform.BaseScript org.pine.SpecScript spec
 
 int someNumber = 0
 
@@ -66,7 +66,7 @@ it 'understands basic arithmetic', {
     @Test
     public void itHasMultipleTestsAndAssumptions () {
         String script = '''
-@groovy.transform.BaseScript SpecScript spec
+@groovy.transform.BaseScript org.pine.SpecScript spec
 
 one = []
 
@@ -91,7 +91,7 @@ it 'has nothing else', {
     @Test
     public void itRespectsWhenBlocks () {
         String script = '''
-@groovy.transform.BaseScript SpecScript spec
+@groovy.transform.BaseScript org.pine.SpecScript spec
 
 one = []
 
