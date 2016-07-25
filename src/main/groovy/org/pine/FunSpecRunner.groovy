@@ -57,23 +57,9 @@ class FunSpecRunner extends ParentRunner<Behavior> {
 
         Statement childStatement = new BehaviorStatement(spec)
         childStatement = new AssumptionsStatement(behavior.assumptions, childStatement)
-        childStatement = new RulesStatement(getTestRules(spec), getMethodRules(spec), spec, description, childStatement)
+        childStatement = new RulesStatement(spec, description, childStatement)
 
         runLeaf(childStatement, description, notifier)
-    }
-
-    private List<TestRule> getTestRules(SpecScript spec) {
-        List<TestRule> rules = testClass.getAnnotatedFieldValues(spec, Rule.class, TestRule.class)
-        rules.addAll(testClass.getAnnotatedMethodValues(spec, Rule.class, TestRule.class))
-
-        return rules
-    }
-
-    private List<MethodRule> getMethodRules(SpecScript spec) {
-        List<MethodRule> rules = testClass.getAnnotatedFieldValues(spec, Rule.class, MethodRule.class)
-        rules.addAll(testClass.getAnnotatedMethodValues(spec, Rule.class, MethodRule.class))
-
-        return rules
     }
 
     class BehaviorStatement extends Statement {
@@ -99,11 +85,10 @@ class FunSpecRunner extends ParentRunner<Behavior> {
         private SpecScript specInstance
         private Description behaviorDescription
 
-        public RulesStatement (List<TestRule> testRules, List<MethodRule> methodRules,
-                               SpecScript specInstance, Description behaviorDescription, Statement statement) {
+        public RulesStatement (SpecScript specInstance, Description behaviorDescription, Statement statement) {
             this.statement = statement
-            this.testRules = testRules
-            this.methodRules = methodRules
+            this.testRules = getTestRules(specInstance)
+            this.methodRules = getMethodRules(specInstance)
             this.method = getFrameworkMethod(specInstance)
             this.specInstance = specInstance
             this.behaviorDescription = behaviorDescription
@@ -117,6 +102,20 @@ class FunSpecRunner extends ParentRunner<Behavior> {
             this.testRules.each { rule -> updatedStatement = rule.apply(updatedStatement, behaviorDescription) }
 
             updatedStatement.evaluate()
+        }
+
+        private List<TestRule> getTestRules(SpecScript spec) {
+            List<TestRule> rules = testClass.getAnnotatedFieldValues(spec, Rule.class, TestRule.class)
+            rules.addAll(testClass.getAnnotatedMethodValues(spec, Rule.class, TestRule.class))
+
+            return rules
+        }
+
+        private List<MethodRule> getMethodRules(SpecScript spec) {
+            List<MethodRule> rules = testClass.getAnnotatedFieldValues(spec, Rule.class, MethodRule.class)
+            rules.addAll(testClass.getAnnotatedMethodValues(spec, Rule.class, MethodRule.class))
+
+            return rules
         }
 
         private FrameworkMethod getFrameworkMethod (SpecScript specScript) {
