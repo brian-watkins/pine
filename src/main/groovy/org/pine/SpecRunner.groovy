@@ -34,13 +34,12 @@ class SpecRunner extends ParentRunner<Behavior> {
     private Spec getSpec() {
         Spec spec = specClass.newInstance()
 
-        Optional<Method> specMethod = Arrays.asList(specClass.getDeclaredMethods()).stream()
+        Method specMethod = Arrays.asList(specClass.getDeclaredMethods()).stream()
                 .filter({ method -> method.isAnnotationPresent(Describe.class) })
-                .findFirst();
+                .findFirst()
+                .orElseThrow(SpecNotFoundException.metaClass.&invokeConstructor)
 
-        println "Found spec method: ${specMethod}"
-
-        spec.invokeMethod(specMethod.get().name, null)
+        spec.invokeMethod(specMethod.name, null)
 
         return spec
     }

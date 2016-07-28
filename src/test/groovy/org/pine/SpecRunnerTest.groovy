@@ -6,6 +6,7 @@ import org.junit.runner.notification.RunNotifier
 import org.pine.testHelpers.SpecTestRunListener
 import org.pine.testHelpers.TestHelper
 
+import static groovy.test.GroovyAssert.shouldFail
 import static org.assertj.core.api.Assertions.*;
 
 class SpecRunnerTest {
@@ -52,6 +53,21 @@ class SpecRunnerTest {
         assert listener.testsStarted == 1
         assert listener.failures == 1
         assert listener.testsFinished == 1
+    }
+
+    class SpecWithoutDescribe implements Spec {
+        def spec() {
+            it 'will not run', {
+                assert 1 == 0
+            }
+        }
+    }
+
+    @Test
+    void itThrowsExceptionWhenNoDescribeFound() {
+        shouldFail SpecNotFoundException, {
+            new SpecRunner(SpecWithoutDescribe)
+        }
     }
 
 }
