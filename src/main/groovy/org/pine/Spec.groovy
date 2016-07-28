@@ -1,14 +1,14 @@
 package org.pine
 
-import org.junit.runner.RunWith
-
-@RunWith(FunSpecRunner.class)
-abstract class SpecScript extends Script {
+trait Spec {
 
     def root = new BehaviorGroup()
     def currentBehaviorGroup = root
 
-    abstract def gatherSpecs()
+    def reset () {
+        root = new BehaviorGroup()
+        currentBehaviorGroup = root
+    }
 
     def List<Behavior> getBehaviors () {
         return root.collectBehaviors()
@@ -37,10 +37,6 @@ abstract class SpecScript extends Script {
         block(this.&it)
 
         currentBehaviorGroup = behaviorGroup.superGroup
-    }
-
-    def run() {
-        println "This is a spec. Run it with JUnit, please."
     }
 
 }

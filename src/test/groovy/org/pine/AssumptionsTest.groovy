@@ -8,46 +8,47 @@ import org.pine.testHelpers.TestHelper
 
 class AssumptionsTest {
 
-    FunSpecRunner runner
+    SpecRunner runner
+
+    class AssumptionsSpec implements Spec {
+        int someNumber = 0
+        int anotherNumber = 1
+
+        @Describe("AssumptionsSpec")
+        def spec() {
+            assume {
+                someNumber = 1
+            }
+
+            assume {
+                anotherNumber = anotherNumber + 1
+            }
+
+            when 'someNumber is updated', {
+                assume { someNumber = 4 }
+
+                it 'finds the updated number', {
+                    assert someNumber == 4
+                }
+            }
+
+            it 'asserts about an assumption', {
+                assert someNumber == 1
+
+                anotherNumber = 7
+                assert anotherNumber == 7
+            }
+
+            it 'asserts about another number', {
+                assert someNumber == 1
+                assert anotherNumber == 2
+            }
+        }
+    }
 
     @Before
     void setUp() {
-        def script = '''
-@groovy.transform.BaseScript org.pine.SpecScript spec
-
-int someNumber = 0
-int anotherNumber = 1
-
-assume {
-    someNumber = 1
-}
-
-assume {
-    anotherNumber = anotherNumber + 1
-}
-
-when 'someNumber is updated', {
-    assume { someNumber = 4 }
-
-    it 'finds the updated number', {
-        assert someNumber == 4
-    }
-}
-
-it 'asserts about an assumption', {
-    assert someNumber == 1
-
-    anotherNumber = 7
-    assert anotherNumber == 7
-}
-
-it 'asserts about another number', {
-    assert someNumber == 1
-    assert anotherNumber == 2
-}
-'''
-        def SpecClass = TestHelper.getClassForScript(script)
-        runner = new FunSpecRunner(SpecClass)
+        runner = new SpecRunner(AssumptionsSpec)
     }
 
     @Test

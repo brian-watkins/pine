@@ -8,34 +8,34 @@ import org.pine.testHelpers.TestHelper
 
 import static org.assertj.core.api.Assertions.*;
 
-class FunSpecRunnerTest {
+class SpecRunnerTest {
 
-    FunSpecRunner runner
+    SpecRunner runner
+
+    class SpecRunnerSpec implements Spec {
+        @Describe('specRunner')
+        def spec () {
+            it 'understands basic arithmetic', {
+                assert 1 == 0
+            }
+        }
+    }
 
     @Before
     void setUp() {
-        String script = '''
-@groovy.transform.BaseScript org.pine.SpecScript spec
-
-it 'understands basic arithmetic', {
-    assert 1 == 0
-}
-'''
-        Class scriptClass = TestHelper.getClassForScript(script);
-
-        runner = new FunSpecRunner(scriptClass)
+        runner = new SpecRunner(SpecRunnerSpec)
     }
 
     @Test
     void itReadsASpecFromAGroovyScript () {
-        List<SpecScript> specs = runner.getChildren()
+        List<Spec> specs = runner.getChildren()
 
         assertThat(specs.size()).isEqualTo(1)
     }
 
     @Test
     void itGetsTheDescriptionOfTheSpec () {
-        List<SpecScript> specs = runner.getChildren()
+        List<Spec> specs = runner.getChildren()
 
         assert runner.describeChild(specs.get(0)).getDisplayName() == 'it understands basic arithmetic'
     }

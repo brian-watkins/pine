@@ -2,9 +2,6 @@ package org.pine
 
 import org.junit.Test
 
-/**
- * Created by bwatkins on 7/17/16.
- */
 class BehaviorGroupTest {
 
     @Test

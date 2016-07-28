@@ -2,10 +2,8 @@ package org.pine.testHelpers
 
 import org.junit.runner.JUnitCore
 import org.junit.runner.Result
+import org.pine.Spec
 
-/**
- * Created by bwatkins on 7/10/16.
- */
 class TestHelper {
 
     public static Class getClassForScript(String script) {
@@ -17,15 +15,9 @@ class TestHelper {
         return groovyClassLoader.parseClass(script, className + ".groovy")
     }
 
-    public static void assertSpecRuns(String script, int failureCount, int runCount, boolean wasSuccessful) {
-        assertSpecRuns(script, "MySpec", failureCount, runCount, wasSuccessful)
-    }
-
-    public static void assertSpecRuns(String script, String className, int failureCount, int runCount, boolean wasSuccessful) {
-        Class scriptClass = TestHelper.getClassForScript(script, className);
-
+    public static void assertSpecRuns(Class spec, int failureCount, int runCount, boolean wasSuccessful) {
         JUnitCore core = new JUnitCore();
-        Result result = core.run(scriptClass);
+        Result result = core.run(spec);
 
         if (result.failureCount > 0) {
             println "Failure ****************************************"
@@ -37,5 +29,4 @@ class TestHelper {
         assert result.runCount == runCount
         assert result.wasSuccessful() == wasSuccessful
     }
-
 }

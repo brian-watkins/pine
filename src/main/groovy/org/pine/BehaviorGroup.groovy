@@ -1,8 +1,5 @@
 package org.pine
 
-/**
- * Created by bwatkins on 7/16/16.
- */
 class BehaviorGroup {
     def name
     def superGroup;

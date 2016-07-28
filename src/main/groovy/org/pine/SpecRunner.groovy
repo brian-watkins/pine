@@ -11,12 +11,14 @@ import org.junit.runners.model.InitializationError
 import org.junit.runners.model.Statement
 import org.junit.runners.model.TestClass
 
-class FunSpecRunner extends ParentRunner<Behavior> {
+import java.lang.reflect.Method
+
+class SpecRunner extends ParentRunner<Behavior> {
 
     Class specClass
     def behaviors = []
 
-    public FunSpecRunner (Class<?> testClass) throws InitializationError {
+    public SpecRunner(Class<?> testClass) throws InitializationError {
         super(testClass)
 
         this.specClass = testClass
@@ -29,11 +31,18 @@ class FunSpecRunner extends ParentRunner<Behavior> {
         return new SpecClass(testClass)
     }
 
-    private SpecScript getSpec() {
-        SpecScript specScript = specClass.newInstance()
-        specScript.gatherSpecs()
+    private Spec getSpec() {
+        Spec spec = specClass.newInstance()
 
-        return specScript
+        Optional<Method> specMethod = Arrays.asList(specClass.getDeclaredMethods()).stream()
+                .filter({ method -> method.isAnnotationPresent(Describe.class) })
+                .findFirst();
+
+        println "Found spec method: ${specMethod}"
+
+        spec.invokeMethod(specMethod.get().name, null)
+
+        return spec
     }
 
     @Override
@@ -48,7 +57,7 @@ class FunSpecRunner extends ParentRunner<Behavior> {
 
     @Override
     protected void runChild(Behavior child, RunNotifier notifier) {
-        SpecScript spec = getSpec()
+        Spec spec = getSpec()
 
         Behavior behavior = spec.behaviors.find{ b -> b.name == child.name }
         Description description = behavior.description()
@@ -72,7 +81,9 @@ class FunSpecRunner extends ParentRunner<Behavior> {
 
         @Override
         void evaluate() throws Throwable {
+            println "hey"
             specScript.run_behavior()
+            println "done"
         }
     }
 
@@ -82,10 +93,10 @@ class FunSpecRunner extends ParentRunner<Behavior> {
         private List<TestRule> testRules
         private List<MethodRule> methodRules
         private FrameworkMethod method
-        private SpecScript specInstance
+        private Spec specInstance
         private Description behaviorDescription
 
-        public RulesStatement (SpecScript specInstance, Description behaviorDescription, Statement statement) {
+        public RulesStatement (Spec specInstance, Description behaviorDescription, Statement statement) {
             this.statement = statement
             this.testRules = getTestRules(specInstance)
             this.methodRules = getMethodRules(specInstance)
@@ -104,22 +115,22 @@ class FunSpecRunner extends ParentRunner<Behavior> {
             updatedStatement.evaluate()
         }
 
-        private List<TestRule> getTestRules(SpecScript spec) {
+        private List<TestRule> getTestRules(Spec spec) {
             List<TestRule> rules = testClass.getAnnotatedFieldValues(spec, Rule.class, TestRule.class)
             rules.addAll(testClass.getAnnotatedMethodValues(spec, Rule.class, TestRule.class))
 
             return rules
         }
 
-        private List<MethodRule> getMethodRules(SpecScript spec) {
+        private List<MethodRule> getMethodRules(Spec spec) {
             List<MethodRule> rules = testClass.getAnnotatedFieldValues(spec, Rule.class, MethodRule.class)
             rules.addAll(testClass.getAnnotatedMethodValues(spec, Rule.class, MethodRule.class))
 
             return rules
         }
 
-        private FrameworkMethod getFrameworkMethod (SpecScript specScript) {
-            MetaMethod behaviorMetaMethod = specScript.metaClass.getMetaMethod("run_behavior")
+        private FrameworkMethod getFrameworkMethod (Spec spec) {
+            MetaMethod behaviorMetaMethod = spec.metaClass.getMetaMethod("run_behavior")
             return new FrameworkMethod(ProxyMethod.metaMethodProxy(behaviorMetaMethod))
         }
     }

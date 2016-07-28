@@ -1,171 +1,159 @@
 package org.pine
 
+import org.junit.ClassRule
+import org.junit.Rule
+import org.junit.rules.MethodRule
+import org.junit.rules.TestRule
+import org.junit.runner.Description
+import org.junit.runner.RunWith
+import org.junit.runners.model.FrameworkMethod
+import org.junit.runners.model.Statement
+import org.pine.testHelpers.FunMethodRule
+import org.pine.testHelpers.FunRule
 import org.pine.testHelpers.TestHelper
 import org.junit.Test
 
 class RuleTest {
 
+    @RunWith(SpecRunner)
+    class RuleTest_1 implements Spec {
+        @ClassRule
+        public static FunRule FUN_RULE = new FunRule()
+
+        @Describe('Spec')
+        def spec() {
+            it 'finds the rule variable', {
+                assert this.FUN_RULE.funType == 'bowling'
+            }
+        }
+    }
+
     @Test
     public void itAddsAndAppliesAJUnitClassRuleOnAField () {
-        String script = '''
-import groovy.transform.*
-import org.pine.SpecScript
-import org.pine.testHelpers.FunRule
-import org.junit.ClassRule
-
-@BaseScript SpecScript spec
-
-@ClassRule
-@Field public static FunRule FUN_RULE = new FunRule()
-
-it 'finds the rule variable', {
-    assert this.FUN_RULE.funType == 'bowling'
-}
-'''
-
-        TestHelper.assertSpecRuns(script, 0, 1, true)
+        TestHelper.assertSpecRuns(RuleTest_1, 0, 1, true)
     }
+
+    @RunWith(SpecRunner)
+    class RuleTest_2 implements Spec {
+        public static String FUN_TYPE = 'running'
+
+        @ClassRule
+        public static TestRule getFunRule() {
+            return new TestRule() {
+                @Override
+                Statement apply(Statement base, Description description) {
+                    println "Yo appling a class rule!"
+                    RuleTest_2.FUN_TYPE = 'bowling'
+                    return base;
+                }
+            }
+        }
+
+
+        @Describe('Spec')
+        def spec() {
+            it 'finds the variable set by the rule', {
+                assert RuleTest_2.FUN_TYPE == 'bowling'
+            }
+        }
+    }
+
 
     @Test
     public void itAddsAndAppliesAJUnitClassRuleOnAMethod () {
-        String script = '''
-import groovy.transform.*
-import org.pine.*
-import org.junit.*
-import org.junit.runners.model.*
-import org.junit.runner.*
-import org.junit.rules.*
-
-@BaseScript SpecScript spec
-
-@Field public static String FUN_TYPE = 'running'
-
-@ClassRule
-public static TestRule getFunRule() {
-    return new TestRule() {
-        @Override
-        Statement apply(Statement base, Description description) {
-            println "Yo appling a class rule!"
-            SuperSpec.FUN_TYPE = 'bowling'
-            return base;
-        }
+        TestHelper.assertSpecRuns(RuleTest_2, 0, 1, true)
     }
-}
 
-it 'finds the variable set by the rule', {
-    assert SuperSpec.FUN_TYPE == 'bowling'
-}
-'''
+    @RunWith(SpecRunner)
+    class RuleTest_3 implements Spec {
+        @Rule
+        public FunRule funRule = new FunRule()
 
-        TestHelper.assertSpecRuns(script, "SuperSpec", 0, 1, true)
+        @Describe('spec')
+        def spec() {
+            it 'finds the rule variable', {
+                assert this.funRule.funType == 'bowling'
+            }
+        }
     }
 
     @Test
     public void itAddsAndAppliesAJUnitRuleOnAField () {
-        String script = '''
-import groovy.transform.*
-import org.pine.SpecScript
-import org.pine.testHelpers.FunRule
-import org.junit.Rule
+        TestHelper.assertSpecRuns(RuleTest_3, 0, 1, true)
+    }
 
-@BaseScript SpecScript spec
+    @RunWith(SpecRunner)
+    class RuleTest_4 implements Spec {
+        String funType = 'running'
 
-@Rule
-@Field public FunRule funRule = new FunRule()
+        @Rule
+        public TestRule getFunRule() {
+            return new TestRule() {
+                @Override
+                Statement apply(Statement base, Description description) {
+                    this.funType = 'bowling'
+                    return base;
+                }
+            }
+        }
 
-it 'finds the rule variable', {
-    assert this.funRule.funType == 'bowling'
-}
-'''
-
-        TestHelper.assertSpecRuns(script, 0, 1, true)
+        @Describe('spec')
+        def spec() {
+            it 'finds the variable set by the rule', {
+                assert this.funType == 'bowling'
+            }
+        }
     }
 
     @Test
     public void itAddsAndAppliesAJUnitRuleOnAMethod () {
-        String script = '''
-import groovy.transform.*
-import org.pine.*
-import org.junit.*
-import org.junit.runners.model.*
-import org.junit.runner.*
-import org.junit.rules.*
-
-@BaseScript SpecScript spec
-
-@Field String funType = 'running'
-
-@Rule
-public TestRule getFunRule() {
-    return new TestRule() {
-        @Override
-        Statement apply(Statement base, Description description) {
-            this.funType = 'bowling'
-            return base;
-        }
+        TestHelper.assertSpecRuns(RuleTest_4, 0, 1, true)
     }
-}
 
-it 'finds the variable set by the rule', {
-    assert this.funType == 'bowling'
-}
-'''
+    @RunWith(SpecRunner)
+    class RuleTest_5 implements Spec {
+        @Rule
+        public FunMethodRule funMethodRule = new FunMethodRule()
 
-        TestHelper.assertSpecRuns(script, 0, 1, true)
+        @Describe('spec')
+        def spec() {
+            it 'finds the rule variable', {
+                assert funMethodRule.methodName == 'run_behavior'
+            }
+        }
     }
 
     @Test
     public void itAddsAndAppliesAJUnitMethodRuleOnAField () {
-        String script = '''
-import groovy.transform.*
-import org.pine.SpecScript
-import org.pine.testHelpers.FunMethodRule
-import org.junit.Rule
+        TestHelper.assertSpecRuns(RuleTest_5, 0, 1, true)
+    }
 
-@BaseScript SpecScript spec
+    @RunWith(SpecRunner)
+    class RuleTest_6 implements Spec {
+        String funType = 'running'
 
-@Rule
-@Field public FunMethodRule funMethodRule = new FunMethodRule()
+        @Rule
+        public MethodRule getFunRule() {
+            return new MethodRule() {
+                @Override
+                Statement apply(Statement base, FrameworkMethod method, Object target) {
+                    this.funType = method.getMethod().name
+                    return base;
+                }
+            }
+        }
 
-it 'finds the rule variable', {
-    assert funMethodRule.methodName == 'run_behavior'
-}
-'''
-
-        TestHelper.assertSpecRuns(script, 0, 1, true)
+        @Describe('spec')
+        def spec () {
+            it 'finds the variable set by the rule', {
+                assert this.funType == 'run_behavior'
+            }
+        }
     }
 
     @Test
     public void itAddsAndAppliesAJUnitMethodRuleOnAMethod () {
-        String script = '''
-import groovy.transform.*
-import org.pine.*
-import org.junit.*
-import org.junit.runners.model.*
-import org.junit.runner.*
-import org.junit.rules.*
-
-@BaseScript SpecScript spec
-
-@Field String funType = 'running'
-
-@Rule
-public MethodRule getFunRule() {
-    return new MethodRule() {
-        @Override
-        Statement apply(Statement base, FrameworkMethod method, Object target) {
-            this.funType = method.getMethod().name
-            return base;
-        }
-    }
-}
-
-it 'finds the variable set by the rule', {
-    assert this.funType == 'run_behavior'
-}
-'''
-
-        TestHelper.assertSpecRuns(script, 0, 1, true)
+        TestHelper.assertSpecRuns(RuleTest_6, 0, 1, true)
     }
 }
 
