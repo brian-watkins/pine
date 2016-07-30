@@ -6,12 +6,12 @@ import org.pine.testHelpers.TestHelper
 class ScriptTest {
 
     @Test
-    public void itRunsASpecInAScriptAndDelegatesToAnotherClass() {
+    public void itRunsASpecInAScript() {
         String script = '''
 @groovy.transform.BaseScript org.pine.SpecScript spec
 
 it 'runs a spec', {
-    assert 'fun' == 'fun'
+    assert 1 == 1
 }
 '''
 
@@ -19,4 +19,5 @@ it 'runs a spec', {
 
         TestHelper.assertSpecRuns(specScriptClass, 0, 1, true)
     }
+
 }

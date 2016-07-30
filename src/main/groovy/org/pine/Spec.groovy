@@ -2,16 +2,18 @@ package org.pine
 
 trait Spec {
 
-    def root = new BehaviorGroup()
-    def currentBehaviorGroup = root
-
-    def reset () {
-        this.root = new BehaviorGroup()
-        this.currentBehaviorGroup = this.root
-    }
+    BehaviorGroup root = new BehaviorGroup()
+    BehaviorGroup currentBehaviorGroup = root
+    String specName
 
     def List<Behavior> getBehaviors () {
         return root.collectBehaviors()
+    }
+
+    def describe(name, block) {
+        this.specName = name
+
+        block(this.&it)
     }
 
     def it (name, block) {

@@ -31,10 +31,14 @@ class SpecRunner extends ParentRunner<Behavior> {
         return new SpecClass(testClass)
     }
 
-    private Spec getSpec() {
+    public Spec getSpec() {
         Spec spec = specClass.newInstance()
 
         spec.invokeMethod(getSpecMethod(spec).name, null)
+
+        if (spec.specName == null) {
+            setSpecName(spec)
+        }
 
         return spec
     }
@@ -48,6 +52,14 @@ class SpecRunner extends ParentRunner<Behavior> {
                 .filter({ method -> method.isAnnotationPresent(Describe.class) })
                 .findFirst()
                 .orElseThrow(SpecNotFoundException.metaClass.&invokeConstructor)
+    }
+
+    private void setSpecName (Spec spec) {
+        Method specMethod = Arrays.asList(specClass.getMethods()).stream()
+                .filter({ method -> method.isAnnotationPresent(Describe.class) })
+                .findFirst().orElse(null)
+
+        spec.setSpecName(specMethod?.getAnnotation(Describe.class)?.value() ?: spec.class.name)
     }
 
     @Override
@@ -66,7 +78,7 @@ class SpecRunner extends ParentRunner<Behavior> {
 
         Behavior behavior = spec.behaviors.find{ b -> b.name == child.name }
         Description description = behavior.description()
-        
+
         Statement childStatement = new BehaviorStatement(behavior)
         childStatement = new AssumptionsStatement(behavior.assumptions, childStatement)
         childStatement = new RulesStatement(spec, description, childStatement)
