@@ -116,9 +116,9 @@ class RuleTest {
         public FunMethodRule funMethodRule = new FunMethodRule()
 
         @Describe('spec')
-        def spec() {
+        def gatherSpecs() {
             it 'finds the rule variable', {
-                assert funMethodRule.methodName == 'run_behavior'
+                assert funMethodRule.methodName == 'gatherSpecs'
             }
         }
     }
@@ -144,9 +144,9 @@ class RuleTest {
         }
 
         @Describe('spec')
-        def spec () {
+        def mySpec () {
             it 'finds the variable set by the rule', {
-                assert this.funType == 'run_behavior'
+                assert this.funType == 'mySpec'
             }
         }
     }

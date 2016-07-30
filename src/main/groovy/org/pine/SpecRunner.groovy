@@ -34,14 +34,20 @@ class SpecRunner extends ParentRunner<Behavior> {
     private Spec getSpec() {
         Spec spec = specClass.newInstance()
 
-        Method specMethod = Arrays.asList(specClass.getDeclaredMethods()).stream()
+        spec.invokeMethod(getSpecMethod(spec).name, null)
+
+        return spec
+    }
+
+    private Method getSpecMethod(Spec spec) {
+        if (spec instanceof Script) {
+            return spec.class.getMethod("run", null)
+        }
+
+        return Arrays.asList(specClass.getMethods()).stream()
                 .filter({ method -> method.isAnnotationPresent(Describe.class) })
                 .findFirst()
                 .orElseThrow(SpecNotFoundException.metaClass.&invokeConstructor)
-
-        spec.invokeMethod(specMethod.name, null)
-
-        return spec
     }
 
     @Override
@@ -60,10 +66,8 @@ class SpecRunner extends ParentRunner<Behavior> {
 
         Behavior behavior = spec.behaviors.find{ b -> b.name == child.name }
         Description description = behavior.description()
-
-        spec.metaClass.run_behavior = { -> behavior.block() }
-
-        Statement childStatement = new BehaviorStatement(spec)
+        
+        Statement childStatement = new BehaviorStatement(behavior)
         childStatement = new AssumptionsStatement(behavior.assumptions, childStatement)
         childStatement = new RulesStatement(spec, description, childStatement)
 
@@ -72,17 +76,15 @@ class SpecRunner extends ParentRunner<Behavior> {
 
     class BehaviorStatement extends Statement {
 
-        private Object specScript
+        private Behavior behavior
 
-        public BehaviorStatement (Object specScript) {
-            this.specScript = specScript
+        public BehaviorStatement (Behavior behavior) {
+            this.behavior = behavior
         }
 
         @Override
         void evaluate() throws Throwable {
-            println "hey"
-            specScript.run_behavior()
-            println "done"
+            behavior.block()
         }
     }
 
@@ -129,8 +131,7 @@ class SpecRunner extends ParentRunner<Behavior> {
         }
 
         private FrameworkMethod getFrameworkMethod (Spec spec) {
-            MetaMethod behaviorMetaMethod = spec.metaClass.getMetaMethod("run_behavior")
-            return new FrameworkMethod(ProxyMethod.metaMethodProxy(behaviorMetaMethod))
+            return new FrameworkMethod(getSpecMethod(spec))
         }
     }
 

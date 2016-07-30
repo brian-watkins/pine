@@ -3,9 +3,9 @@ package org.pine
 import org.junit.runner.Description
 
 class Behavior {
-    def block
-    def name
-    def group
+    Closure block
+    String name
+    BehaviorGroup group
 
     def List<Closure> getAssumptions() {
         return group.collectAssumptions()

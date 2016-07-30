@@ -6,8 +6,8 @@ trait Spec {
     def currentBehaviorGroup = root
 
     def reset () {
-        root = new BehaviorGroup()
-        currentBehaviorGroup = root
+        this.root = new BehaviorGroup()
+        this.currentBehaviorGroup = this.root
     }
 
     def List<Behavior> getBehaviors () {
