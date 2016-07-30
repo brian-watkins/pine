@@ -69,7 +69,7 @@ class SpecRunner extends ParentRunner<Behavior> {
 
     @Override
     protected Description describeChild(Behavior child) {
-        return child.description()
+        return Description.createTestDescription(testClass.getName(), child.getDisplayName())
     }
 
     @Override
@@ -77,7 +77,8 @@ class SpecRunner extends ParentRunner<Behavior> {
         Spec spec = getSpec()
 
         Behavior behavior = spec.behaviors.find{ b -> b.name == child.name }
-        Description description = behavior.description()
+        Description description = describeChild(behavior)
+
 
         Statement childStatement = new BehaviorStatement(behavior)
         childStatement = new AssumptionsStatement(behavior.assumptions, childStatement)

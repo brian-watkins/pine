@@ -38,7 +38,7 @@ class SpecRunnerTest {
     void itGetsTheDescriptionOfTheSpec () {
         List<Spec> specs = runner.getChildren()
 
-        assert runner.describeChild(specs.get(0)).getDisplayName() == 'it understands basic arithmetic'
+        assert runner.describeChild(specs.get(0)).getDisplayName() == 'it understands basic arithmetic(org.pine.SpecRunnerTest$SpecRunnerSpec)'
     }
 
     @Test

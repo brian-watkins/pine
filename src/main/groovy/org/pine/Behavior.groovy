@@ -8,15 +8,11 @@ class Behavior {
     BehaviorGroup group
 
     def List<Closure> getAssumptions() {
-        return group.collectAssumptions()
+        group.collectAssumptions()
     }
 
-    def description () {
-        new Description(null, getDisplayName())
-    }
-
-    private def getDisplayName() {
-        return getGroupDescription() + "it ${name}"
+    def String getDisplayName() {
+        getGroupDescription() + "it ${name}"
     }
 
     private def getGroupDescription() {

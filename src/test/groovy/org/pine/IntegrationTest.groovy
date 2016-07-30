@@ -25,7 +25,7 @@ class IntegrationTest {
         Result result = core.run(IntegrationSpec);
 
         assert result.failureCount == 1
-        assert result.failures[0].description.displayName == 'it understands basic arithmetic'
+        assert result.failures[0].description.displayName == 'it understands basic arithmetic(org.pine.IntegrationTest$IntegrationSpec)'
         assert result.failures[0].exception instanceof AssertionError
         assert result.runCount == 1
         assert result.wasSuccessful() == false

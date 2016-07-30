@@ -14,7 +14,7 @@ class BehaviorSpec {
 
         parent.addBehavior(behavior)
 
-        assert behavior.description().displayName == 'when something happens, it does something'
+        assert behavior.displayName == 'when something happens, it does something'
     }
 
     @Test
@@ -26,7 +26,7 @@ class BehaviorSpec {
 
         parent.addBehavior(behavior)
 
-        assert behavior.description().displayName == 'it does something'
+        assert behavior.displayName == 'it does something'
     }
 
     @Test
@@ -47,7 +47,7 @@ class BehaviorSpec {
 
         grandChild.addBehavior(behavior)
 
-        assert behavior.description().displayName == 'when something happens, and another thing happens, and things go awry, it does something'
+        assert behavior.displayName == 'when something happens, and another thing happens, and things go awry, it does something'
     }
 
 }
