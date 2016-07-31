@@ -1,4 +1,4 @@
-package org.pine
+package org.pine.script.annotation
 
 import org.codehaus.groovy.transform.GroovyASTTransformationClass
 
@@ -9,6 +9,6 @@ import java.lang.annotation.Target
 
 @Retention(RetentionPolicy.SOURCE)
 @Target([ElementType.TYPE])
-@GroovyASTTransformationClass("org.pine.SpecScriptClassTransformation")
+@GroovyASTTransformationClass("org.pine.script.annotation.SpecScriptClassTransformation")
 @interface SpecScriptClass {
 }

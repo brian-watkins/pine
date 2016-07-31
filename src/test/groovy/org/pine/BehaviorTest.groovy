@@ -2,7 +2,7 @@ package org.pine
 
 import org.junit.Test
 
-class BehaviorSpec {
+class BehaviorTest {
 
     @Test
     public void descriptionIsBasedOnParentGroup () {

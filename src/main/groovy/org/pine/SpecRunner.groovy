@@ -10,6 +10,8 @@ import org.junit.runners.model.FrameworkMethod
 import org.junit.runners.model.InitializationError
 import org.junit.runners.model.Statement
 import org.junit.runners.model.TestClass
+import org.pine.annotation.Describe
+import org.pine.annotation.SpecDelegate
 
 import java.lang.reflect.Method
 
@@ -80,7 +82,7 @@ class SpecRunner extends ParentRunner<Behavior> {
         Description description = describeChild(behavior)
 
 
-        Statement childStatement = new BehaviorStatement(behavior)
+        Statement childStatement = new BehaviorStatement(spec, behavior)
         childStatement = new AssumptionsStatement(behavior.assumptions, childStatement)
         childStatement = new RulesStatement(spec, description, childStatement)
 
@@ -90,14 +92,25 @@ class SpecRunner extends ParentRunner<Behavior> {
     class BehaviorStatement extends Statement {
 
         private Behavior behavior
+        private Spec spec
 
-        public BehaviorStatement (Behavior behavior) {
+        public BehaviorStatement (Spec spec, Behavior behavior) {
             this.behavior = behavior
+            this.spec = spec
+            setBehaviorDelegate()
         }
 
         @Override
         void evaluate() throws Throwable {
             behavior.block()
+        }
+
+        private void setBehaviorDelegate() {
+            Optional<Object> scriptDelegate = testClass.getAnnotatedFieldValues(this.spec, SpecDelegate, Object).stream().findFirst()
+            if (scriptDelegate.present) {
+                behavior.block.delegate = scriptDelegate.get()
+                behavior.block.resolveStrategy = Closure.DELEGATE_FIRST
+            }
         }
     }
 

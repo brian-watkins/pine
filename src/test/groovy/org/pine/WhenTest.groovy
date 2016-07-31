@@ -1,7 +1,7 @@
 package org.pine
 
 import org.junit.Test
-import org.pine.testHelpers.TestHelper
+import org.pine.annotation.Describe
 
 import java.util.stream.Collectors
 

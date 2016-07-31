@@ -8,6 +8,7 @@ import org.junit.runner.Description
 import org.junit.runner.RunWith
 import org.junit.runners.model.FrameworkMethod
 import org.junit.runners.model.Statement
+import org.pine.annotation.Describe
 import org.pine.testHelpers.FunMethodRule
 import org.pine.testHelpers.FunRule
 import org.pine.testHelpers.TestHelper

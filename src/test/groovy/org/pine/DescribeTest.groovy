@@ -1,9 +1,10 @@
 package org.pine
 
 import org.junit.Test
+import org.pine.annotation.Describe
 import org.pine.testHelpers.TestHelper
 
-class DescribeSpec {
+class DescribeTest {
 
     class DescribedSpec implements Spec {
         @Describe("FunnyController")
@@ -33,14 +34,14 @@ class DescribeSpec {
         SpecRunner runner = new SpecRunner(NoNameSpec)
         Spec describedSpec = runner.getSpec()
 
-        assert describedSpec.specName == 'org.pine.DescribeSpec$NoNameSpec'
-        assert describedSpec.getSpecName() == 'org.pine.DescribeSpec$NoNameSpec'
+        assert describedSpec.specName == 'org.pine.DescribeTest$NoNameSpec'
+        assert describedSpec.getSpecName() == 'org.pine.DescribeTest$NoNameSpec'
     }
 
     @Test
     public void itDescribesTheSpecFromDescribeMethodInScript() {
         String script = '''
-@groovy.transform.BaseScript org.pine.SpecScript spec
+@groovy.transform.BaseScript org.pine.script.SpecScript spec
 
 describe 'MySpec', {
     it 'runs a spec', {
@@ -61,7 +62,7 @@ describe 'MySpec', {
     @Test
     public void itSetsClassNameAsSpecNameWhenNoneGivenInScript() {
         String script = '''
-@groovy.transform.BaseScript org.pine.SpecScript spec
+@groovy.transform.BaseScript org.pine.script.SpecScript spec
 
 it 'runs a spec', {
     assert 1 == 1
