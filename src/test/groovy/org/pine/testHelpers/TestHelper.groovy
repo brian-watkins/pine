@@ -1,6 +1,7 @@
 package org.pine.testHelpers
 
 import org.junit.runner.JUnitCore
+import org.junit.runner.Request
 import org.junit.runner.Result
 import org.pine.Spec
 
@@ -16,6 +17,10 @@ class TestHelper {
     }
 
     public static void assertSpecRuns(Class spec, int failureCount, int runCount, boolean wasSuccessful) {
+        assertSpecRuns(spec, failureCount, runCount, -1, wasSuccessful)
+    }
+
+    public static void assertSpecRuns (Class spec, int failureCount, int runCount, int ignoreCount, boolean wasSuccessful) {
         JUnitCore core = new JUnitCore();
         Result result = core.run(spec);
 
@@ -25,8 +30,12 @@ class TestHelper {
             println "************************************************"
         }
 
-        assert result.failureCount == failureCount
         assert result.runCount == runCount
+        assert result.failureCount == failureCount
+        if (ignoreCount > -1) {
+            assert result.ignoreCount == ignoreCount
+        }
         assert result.wasSuccessful() == wasSuccessful
     }
+
 }

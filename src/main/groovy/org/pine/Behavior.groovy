@@ -6,6 +6,7 @@ class Behavior {
     Closure block
     String name
     BehaviorGroup group
+    boolean focused = false
 
     def List<Closure> getAssumptions() {
         group.collectAssumptions()

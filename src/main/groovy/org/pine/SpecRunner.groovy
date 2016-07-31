@@ -19,13 +19,16 @@ class SpecRunner extends ParentRunner<Behavior> {
 
     Class specClass
     def behaviors = []
+    private boolean hasFocusedBehaviors = false
 
     public SpecRunner(Class<?> testClass) throws InitializationError {
         super(testClass)
 
         this.specClass = testClass
 
-        this.behaviors = getSpec().getBehaviors()
+        Spec spec = getSpec()
+        hasFocusedBehaviors = spec.hasFocusedBehaviors
+        this.behaviors = spec.getBehaviors()
     }
 
     protected TestClass createTestClass(Class testClass) {
@@ -34,7 +37,7 @@ class SpecRunner extends ParentRunner<Behavior> {
     }
 
     public Spec getSpec() {
-        Spec spec = specClass.newInstance()
+        Spec spec = (Spec) specClass.newInstance()
 
         spec.invokeMethod(getSpecMethod(spec).name, null)
 
@@ -76,6 +79,11 @@ class SpecRunner extends ParentRunner<Behavior> {
 
     @Override
     protected void runChild(Behavior child, RunNotifier notifier) {
+        if (hasFocusedBehaviors && !child.focused) {
+            notifier.fireTestIgnored(describeChild(child))
+            return
+        }
+
         Spec spec = getSpec()
 
         Behavior behavior = spec.behaviors.find{ b -> b.name == child.name }
