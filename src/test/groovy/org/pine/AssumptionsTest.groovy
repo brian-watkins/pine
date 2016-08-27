@@ -6,6 +6,8 @@ import org.junit.runner.notification.RunNotifier
 import org.pine.annotation.Describe
 import org.pine.testHelpers.SpecTestRunListener
 
+import static org.pine.testHelpers.TestHelper.assertBehaviorPasses
+
 class AssumptionsTest {
 
     SpecRunner runner
@@ -53,7 +55,7 @@ class AssumptionsTest {
 
     @Test
     public void itMakesAssumptionsUsedInTests () {
-        assertBehaviorPasses(runner.getChildren().get(0))
+        assertBehaviorPasses(runner, runner.getChildren().get(0))
     }
 
     @Test
@@ -61,18 +63,7 @@ class AssumptionsTest {
         List<Behavior> behaviors = runner.getChildren()
 
         assert behaviors.size == 3
-        behaviors.each{ b -> assertBehaviorPasses(b) }
-    }
-
-    private assertBehaviorPasses(Behavior behavior) {
-        SpecTestRunListener listener = new SpecTestRunListener()
-
-        RunNotifier runNotifier = new RunNotifier()
-        runNotifier.addFirstListener(listener)
-        runner.runChild(behavior, runNotifier)
-
-        assert listener.failures == 0
-        assert listener.testsFinished > 0
+        behaviors.each{ b -> assertBehaviorPasses(runner, b) }
     }
 
 }

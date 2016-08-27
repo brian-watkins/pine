@@ -9,6 +9,8 @@ class SpecTestRunListener extends RunListener {
     int testsStarted = 0
     int testsFinished = 0
 
+    List failureMessages = new ArrayList<String>()
+
     @Override
     public void testStarted (Description description) {
         testsStarted++
@@ -17,6 +19,7 @@ class SpecTestRunListener extends RunListener {
     @Override
     public void testFailure (Failure failure) {
         failures++
+        failureMessages.add(failure.getMessage())
     }
 
     @Override

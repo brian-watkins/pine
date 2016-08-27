@@ -12,6 +12,10 @@ class Behavior {
         group.collectAssumptions()
     }
 
+    def List<Closure> getFinalizers() {
+        group.collectFinalizers()
+    }
+
     def String getDisplayName() {
         getGroupDescription() + "it ${name}"
     }

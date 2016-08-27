@@ -84,25 +84,33 @@ class SpecRunner extends ParentRunner<Behavior> {
             return
         }
 
+        println "Getting spec to run behavior: ${child.name}"
+
         Spec spec = getSpec()
+
+        println "Running behavior ..."
 
         Behavior behavior = spec.behaviors.find{ b -> b.name == child.name }
         Description description = describeChild(behavior)
 
-
-        Statement childStatement = new BehaviorStatement(spec, behavior)
+        Statement childStatement = new FinalizerStatement(behavior.finalizers)
+        childStatement = new BehaviorStatement(spec, behavior, childStatement)
         childStatement = new AssumptionsStatement(behavior.assumptions, childStatement)
         childStatement = new RulesStatement(spec, description, childStatement)
 
         runLeaf(childStatement, description, notifier)
+
+        println "Done running behavior"
     }
 
     class BehaviorStatement extends Statement {
 
+        private Statement statement
         private Behavior behavior
         private Spec spec
 
-        public BehaviorStatement (Spec spec, Behavior behavior) {
+        public BehaviorStatement (Spec spec, Behavior behavior, Statement statement) {
+            this.statement = statement
             this.behavior = behavior
             this.spec = spec
             setBehaviorDelegate()
@@ -110,7 +118,10 @@ class SpecRunner extends ParentRunner<Behavior> {
 
         @Override
         void evaluate() throws Throwable {
+            println "Running behavior block"
             behavior.block()
+
+            this.statement.evaluate()
         }
 
         private void setBehaviorDelegate() {
@@ -187,6 +198,23 @@ class SpecRunner extends ParentRunner<Behavior> {
             }
 
             this.statement.evaluate()
+        }
+    }
+
+    class FinalizerStatement extends Statement {
+
+        private List<Closure> finalizers
+
+        public FinalizerStatement (List<Closure> finalizers) {
+            this.finalizers = finalizers
+        }
+
+        @Override
+        void evaluate() throws Throwable {
+            this.finalizers.forEach { block ->
+                println "Running finalizer"
+                block()
+            }
         }
     }
 }

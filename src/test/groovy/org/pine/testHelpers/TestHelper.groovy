@@ -3,7 +3,10 @@ package org.pine.testHelpers
 import org.junit.runner.JUnitCore
 import org.junit.runner.Request
 import org.junit.runner.Result
+import org.junit.runner.notification.RunNotifier
+import org.pine.Behavior
 import org.pine.Spec
+import org.pine.SpecRunner
 
 class TestHelper {
 
@@ -36,6 +39,26 @@ class TestHelper {
             assert result.ignoreCount == ignoreCount
         }
         assert result.wasSuccessful() == wasSuccessful
+    }
+
+    public static void assertBehaviorPasses(SpecRunner runner, Behavior behavior) {
+        SpecTestRunListener listener = new SpecTestRunListener()
+
+        RunNotifier runNotifier = new RunNotifier()
+        runNotifier.addFirstListener(listener)
+        runner.runChild(behavior, runNotifier)
+
+        if (listener.failures > 0) {
+            println "***********************"
+            listener.failureMessages.forEach { message ->
+                println "Failure: "
+                println message
+            }
+            println "***********************"
+        }
+
+        assert listener.failures == 0
+        assert listener.testsFinished > 0
     }
 
 }

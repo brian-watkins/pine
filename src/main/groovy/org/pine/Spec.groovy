@@ -11,21 +11,21 @@ trait Spec {
         return root.collectBehaviors()
     }
 
-    def describe(name, block) {
+    def describe(String name, Closure block) {
         this.specName = name
 
         block(this.&it)
     }
 
-    def fit (name, block) {
+    def fit (String name, Closure block) {
         addBehavior(name, block, true)
     }
 
-    def it (name, block) {
+    def it (String name, Closure block) {
         addBehavior(name, block, false)
     }
 
-    private def addBehavior (name, block, isFocused) {
+    private def addBehavior (String name, Closure block, boolean isFocused) {
         System.out.println("it ${name}")
 
         Behavior behavior = new Behavior()
@@ -40,12 +40,13 @@ trait Spec {
         }
     }
 
-    def assume (block) {
+    def assume (Closure block) {
         System.out.println("assume")
-        currentBehaviorGroup.assumptions << block
+        currentBehaviorGroup.addAssumption(block)
     }
 
-    def when (name, block) {
+    def when (String name, Closure block) {
+        println "When ${name}"
         BehaviorGroup behaviorGroup = new BehaviorGroup()
         behaviorGroup.name = name
         currentBehaviorGroup.addSubGroup(behaviorGroup)
@@ -54,6 +55,11 @@ trait Spec {
         block(this.&it)
 
         currentBehaviorGroup = behaviorGroup.superGroup
+    }
+
+    def finalize (Closure block) {
+        println "Finalizer"
+        currentBehaviorGroup.addFinalizer(block)
     }
 
 }
