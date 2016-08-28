@@ -49,11 +49,8 @@ class TestHelper {
         runner.runChild(behavior, runNotifier)
 
         if (listener.failures > 0) {
-            println "***********************"
-            listener.failureMessages.forEach { message ->
-                println "Failure: "
-                println message
-            }
+            println "Failure ***********************"
+            listener.failureMessages.forEach { message -> println message }
             println "***********************"
         }
 

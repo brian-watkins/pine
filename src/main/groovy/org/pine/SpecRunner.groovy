@@ -94,7 +94,7 @@ class SpecRunner extends ParentRunner<Behavior> {
         Description description = describeChild(behavior)
 
         Statement childStatement = new FinalizerStatement(behavior.finalizers)
-        childStatement = new BehaviorStatement(spec, behavior, childStatement)
+        childStatement = new BehaviorStatement(behavior, childStatement)
         childStatement = new AssumptionsStatement(behavior.assumptions, childStatement)
         childStatement = new RulesStatement(spec, description, childStatement)
 
@@ -103,33 +103,34 @@ class SpecRunner extends ParentRunner<Behavior> {
         println "Done running behavior"
     }
 
+    private void setDelegateForSpecClosure(Closure block) {
+        Optional<Object> scriptDelegate = testClass.getAnnotatedFieldValues(block.getOwner(), SpecDelegate, Object).stream().findFirst()
+        if (scriptDelegate.present) {
+            block.delegate = scriptDelegate.get()
+            block.resolveStrategy = Closure.DELEGATE_FIRST
+        } else {
+            println "SpecDelegate not found!"
+        }
+    }
+
     class BehaviorStatement extends Statement {
 
         private Statement statement
         private Behavior behavior
-        private Spec spec
 
-        public BehaviorStatement (Spec spec, Behavior behavior, Statement statement) {
+        public BehaviorStatement (Behavior behavior, Statement statement) {
             this.statement = statement
             this.behavior = behavior
-            this.spec = spec
-            setBehaviorDelegate()
         }
 
         @Override
         void evaluate() throws Throwable {
             println "Running behavior block"
+            setDelegateForSpecClosure(behavior.block)
+
             behavior.block()
 
             this.statement.evaluate()
-        }
-
-        private void setBehaviorDelegate() {
-            Optional<Object> scriptDelegate = testClass.getAnnotatedFieldValues(this.spec, SpecDelegate, Object).stream().findFirst()
-            if (scriptDelegate.present) {
-                behavior.block.delegate = scriptDelegate.get()
-                behavior.block.resolveStrategy = Closure.DELEGATE_FIRST
-            }
         }
     }
 
@@ -194,6 +195,7 @@ class SpecRunner extends ParentRunner<Behavior> {
         void evaluate() throws Throwable {
             this.assumptions.each { assumption ->
                 println "Running assumption"
+                setDelegateForSpecClosure(assumption)
                 assumption()
             }
 
@@ -213,6 +215,7 @@ class SpecRunner extends ParentRunner<Behavior> {
         void evaluate() throws Throwable {
             this.finalizers.forEach { block ->
                 println "Running finalizer"
+                setDelegateForSpecClosure(block)
                 block()
             }
         }
