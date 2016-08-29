@@ -30,7 +30,7 @@ Use the following DSL to write your specs:
 + `it(String name, Closure block)` - define a behavior
 + `when(String name, Closure block)` - define a context
 + `assume(Closure block)` - run before each behavior in the context
-+ `finalize(Closure block)` -- run after each behavior in the context
++ `finalize(Closure block)` - run after each behavior in the context
 
 You can focus a particular behavior by describing it using `fit` instead of `it`. If any behaviors in a spec are focused, only those behaviors will run when the spec is run. Note that this is true only within a spec class; behaviors defined in other classes will still run. 
 
@@ -51,7 +51,7 @@ describe 'My Component', {
 
 	int someNumber = 0
 
-    when 'something happens', {
+    when 'some number is 2', {
     	assume {
     		someNumber = 2
     	}
@@ -89,7 +89,7 @@ describe 'My Component', {
 ```
 
 
-`@SpecDelegate` -- Add this annotation to a field and the object belonging to this variable will be used as the delegate of the behavior closure. While this annotation can be used within any spec, it's especially useful within Groovy scripts. A Groovy script must inherit from the `Script` class, but sometimes it's useful when writing tests to extend from a different base class -- like when writing tests using Fluentlenium. Using the `@ScriptDelegate` annotation, you can call delegate method calls and property references to a class other than the base class. If a method call or property reference is not found in the delegate class, then the base class will be searched. 
+`@SpecDelegate` -- Add this annotation to a field and the object belonging to this variable will be used as the delegate of the script closures (`it` blocks, `assume` blocks, and `finalize` blocks). While this annotation can be used within any spec, it's especially useful within Groovy scripts. A Groovy script must inherit from the `Script` class, but sometimes it's useful when writing tests to extend from a different base class -- like when writing tests using Fluentlenium. Using the `@ScriptDelegate` annotation, you can call delegate method calls and property references to a class other than the base class. If a method call or property reference is not found in the delegate class, then the base class will be searched.
 
 ```
 @BaseScript SpecScript spec
