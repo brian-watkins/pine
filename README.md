@@ -34,6 +34,8 @@ Use the following DSL to write your specs:
 
 You can focus a particular behavior by describing it using `fit` instead of `it`. If any behaviors in a spec are focused, only those behaviors will run when the spec is run. Note that this is true only within a spec class; behaviors defined in other classes will still run. 
 
+You can ignore a particular behavior by describing it using `xit` instead of `it`.
+
 ### Examples
 
 #### Groovy Script Style

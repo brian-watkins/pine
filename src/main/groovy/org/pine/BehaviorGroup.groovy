@@ -2,7 +2,7 @@ package org.pine
 
 class BehaviorGroup {
     def name
-    def superGroup;
+    def superGroup
 
     private List<Closure> assumptions = []
     private List<Behavior> behaviors = []

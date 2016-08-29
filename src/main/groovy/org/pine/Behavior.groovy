@@ -1,12 +1,12 @@
 package org.pine
 
-import org.junit.runner.Description
+import static org.pine.BehaviorRunModifier.*
 
 class Behavior {
     Closure block
     String name
     BehaviorGroup group
-    boolean focused = false
+    BehaviorRunModifier runModifier
 
     def List<Closure> getAssumptions() {
         group.collectAssumptions()
@@ -18,6 +18,14 @@ class Behavior {
 
     def String getDisplayName() {
         getGroupDescription() + "it ${name}"
+    }
+
+    def boolean isIgnored () {
+        return runModifier == IGNORED
+    }
+
+    def boolean isFocused () {
+        return runModifier == FOCUSED
     }
 
     private def getGroupDescription() {

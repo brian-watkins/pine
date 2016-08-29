@@ -1,5 +1,7 @@
 package org.pine
 
+import static org.pine.BehaviorRunModifier.*
+
 trait Spec {
 
     BehaviorGroup root = new BehaviorGroup()
@@ -18,25 +20,29 @@ trait Spec {
     }
 
     def fit (String name, Closure block) {
-        addBehavior(name, block, true)
+        addBehavior(name, block, FOCUSED)
+    }
+
+    def xit (String name, Closure block) {
+        addBehavior(name, block, IGNORED)
     }
 
     def it (String name, Closure block) {
-        addBehavior(name, block, false)
+        addBehavior(name, block, NONE)
     }
 
-    private def addBehavior (String name, Closure block, boolean isFocused) {
+    private def addBehavior (String name, Closure block, BehaviorRunModifier runModifier) {
         System.out.println("it ${name}")
 
         Behavior behavior = new Behavior()
         behavior.name = name
         behavior.block = block
-        behavior.focused = isFocused
+        behavior.runModifier = runModifier
 
         currentBehaviorGroup.addBehavior(behavior)
 
         if (!hasFocusedBehaviors) {
-            hasFocusedBehaviors = isFocused
+            hasFocusedBehaviors = runModifier == FOCUSED
         }
     }
 

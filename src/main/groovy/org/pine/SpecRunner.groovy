@@ -79,7 +79,7 @@ class SpecRunner extends ParentRunner<Behavior> {
 
     @Override
     protected void runChild(Behavior child, RunNotifier notifier) {
-        if (hasFocusedBehaviors && !child.focused) {
+        if (child.isIgnored() || ( hasFocusedBehaviors && !child.isFocused() )) {
             notifier.fireTestIgnored(describeChild(child))
             return
         }
