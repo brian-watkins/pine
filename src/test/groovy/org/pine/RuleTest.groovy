@@ -34,6 +34,26 @@ class RuleTest {
         TestHelper.assertSpecRuns(RuleTest_1, 0, 1, true)
     }
 
+    class SuperRuleTest {
+        @ClassRule
+        public static FunRule FUN_RULE = new FunRule()
+    }
+
+    @RunWith(SpecRunner)
+    class InheritRuleTest_1 extends SuperRuleTest implements Spec {
+        @Describe('Spec')
+        def spec() {
+            it 'finds the rule variable', {
+                assert this.FUN_RULE.funType == 'bowling'
+            }
+        }
+    }
+
+    @Test
+    public void itAddsAndAppliesAJUnitClassRuleOnASuperClassField () {
+        TestHelper.assertSpecRuns(InheritRuleTest_1, 0, 1, true)
+    }
+
     @RunWith(SpecRunner)
     class RuleTest_2 implements Spec {
         public static String FUN_TYPE = 'running'
@@ -109,6 +129,36 @@ class RuleTest {
     @Test
     public void itAddsAndAppliesAJUnitRuleOnAMethod () {
         TestHelper.assertSpecRuns(RuleTest_4, 0, 1, true)
+    }
+
+    class SuperRuleTest_4 {
+        String funType = 'running'
+
+        @Rule
+        public TestRule getFunRule() {
+            return new TestRule() {
+                @Override
+                Statement apply(Statement base, Description description) {
+                    this.funType = 'bowling'
+                    return base;
+                }
+            }
+        }
+    }
+
+    @RunWith(SpecRunner)
+    class InheritRuleTest_4 extends SuperRuleTest_4 implements Spec {
+        @Describe('spec')
+        def spec() {
+            it 'finds the variable set by the rule', {
+                assert this.funType == 'bowling'
+            }
+        }
+    }
+
+    @Test
+    public void itAddsAndAppliesAJunitRuleOnASuperClassMethod() {
+        TestHelper.assertSpecRuns(InheritRuleTest_4, 0, 1, true)
     }
 
     @RunWith(SpecRunner)

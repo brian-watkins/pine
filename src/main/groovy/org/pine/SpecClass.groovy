@@ -25,7 +25,7 @@ public class SpecClass extends TestClass {
 
     @Override
     public <T> List<T> getAnnotatedFieldValues(Object specScriptInstance, Class<? extends Annotation> annotationClass, Class<T> valueClass) {
-        return Arrays.asList(this.specClass.getDeclaredFields()).stream()
+        return Arrays.asList(this.specClass.getFields()).stream()
                 .filter({ field -> field.getAnnotationsByType(annotationClass).size() > 0 })
                 .map({ field -> getFieldValue(field, specScriptInstance) })
                 .filter({ fieldValue -> valueClass.isInstance(fieldValue) })
@@ -47,7 +47,7 @@ public class SpecClass extends TestClass {
     @Override
     public <T> List<T> getAnnotatedMethodValues(Object specScriptInstance,
                                                 Class<? extends Annotation> annotationClass, Class<T> valueClass) {
-        return Arrays.asList(this.specClass.getDeclaredMethods()).stream()
+        return Arrays.asList(this.specClass.getMethods()).stream()
                 .filter({ method -> method.getAnnotationsByType(annotationClass).size() > 0 })
                 .filter({ method -> valueClass.isAssignableFrom(method.getReturnType()) })
                 .map({ method -> invokeAnnotatedMethod(method, specScriptInstance) })
