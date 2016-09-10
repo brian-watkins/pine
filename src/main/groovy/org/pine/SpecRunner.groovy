@@ -1,8 +1,5 @@
 package org.pine
 
-import org.junit.Rule
-import org.junit.rules.MethodRule
-import org.junit.rules.TestRule
 import org.junit.runner.Description
 import org.junit.runner.notification.RunNotifier
 import org.junit.runners.ParentRunner
@@ -11,20 +8,21 @@ import org.junit.runners.model.InitializationError
 import org.junit.runners.model.Statement
 import org.junit.runners.model.TestClass
 import org.pine.annotation.Describe
-import org.pine.annotation.SpecDelegate
-
-import java.lang.reflect.Method
+import org.pine.statement.AssumptionsStatement
+import org.pine.statement.BehaviorStatement
+import org.pine.statement.FinalizerStatement
+import org.pine.statement.RulesStatement
 
 class SpecRunner extends ParentRunner<Behavior> {
 
-    Class specClass
+    SpecClass specClass
     def behaviors = []
     private boolean hasFocusedBehaviors = false
 
     public SpecRunner(Class<?> testClass) throws InitializationError {
         super(testClass)
 
-        this.specClass = testClass
+        this.specClass = (SpecClass) getTestClass()
 
         Spec spec = getSpec()
         hasFocusedBehaviors = spec.hasFocusedBehaviors
@@ -37,9 +35,9 @@ class SpecRunner extends ParentRunner<Behavior> {
     }
 
     public Spec getSpec() {
-        Spec spec = (Spec) specClass.newInstance()
+        Spec spec = (Spec) specClass.getSpecClass().newInstance()
 
-        spec.invokeMethod(getSpecMethod(spec).name, null)
+        getSpecMethod(spec).invokeExplosively(spec)
 
         if (spec.specName == null) {
             setSpecName(spec)
@@ -48,22 +46,19 @@ class SpecRunner extends ParentRunner<Behavior> {
         return spec
     }
 
-    private Method getSpecMethod(Spec spec) {
+    private FrameworkMethod getSpecMethod(Spec spec) {
         if (spec instanceof Script) {
-            return spec.class.getMethod("run", null)
+            return new FrameworkMethod(spec.class.getMethod("run", null))
         }
 
-        return Arrays.asList(specClass.getMethods()).stream()
-                .filter({ method -> method.isAnnotationPresent(Describe.class) })
+        return specClass.getAnnotatedMethods(Describe).stream()
                 .findFirst()
                 .orElseThrow(SpecNotFoundException.metaClass.&invokeConstructor)
     }
 
     private void setSpecName (Spec spec) {
-        Method specMethod = Arrays.asList(specClass.getMethods()).stream()
-                .filter({ method -> method.isAnnotationPresent(Describe.class) })
+        FrameworkMethod specMethod = testClass.getAnnotatedMethods(Describe).stream()
                 .findFirst().orElse(null)
-
         spec.setSpecName(specMethod?.getAnnotation(Describe.class)?.value() ?: spec.class.name)
     }
 
@@ -93,131 +88,13 @@ class SpecRunner extends ParentRunner<Behavior> {
         Behavior behavior = spec.behaviors.find{ b -> b.name == child.name }
         Description description = describeChild(behavior)
 
-        Statement childStatement = new FinalizerStatement(behavior.finalizers)
-        childStatement = new BehaviorStatement(behavior, childStatement)
-        childStatement = new AssumptionsStatement(behavior.assumptions, childStatement)
-        childStatement = new RulesStatement(spec, description, childStatement)
+        Statement childStatement = new FinalizerStatement(specClass, behavior.finalizers)
+        childStatement = new BehaviorStatement(specClass, behavior, childStatement)
+        childStatement = new AssumptionsStatement(specClass, spec, behavior.assumptions, childStatement)
+        childStatement = new RulesStatement(specClass, spec, getSpecMethod(spec), description, childStatement)
 
         runLeaf(childStatement, description, notifier)
 
         println "Done running behavior"
-    }
-
-    private void setDelegateForSpecClosure(Closure block) {
-        Optional<Object> scriptDelegate = testClass.getAnnotatedFieldValues(block.getOwner(), SpecDelegate, Object).stream().findFirst()
-        if (scriptDelegate.present) {
-            block.delegate = scriptDelegate.get()
-            block.resolveStrategy = Closure.DELEGATE_FIRST
-        } else {
-            println "SpecDelegate not found!"
-        }
-    }
-
-    class BehaviorStatement extends Statement {
-
-        private Statement statement
-        private Behavior behavior
-
-        public BehaviorStatement (Behavior behavior, Statement statement) {
-            this.statement = statement
-            this.behavior = behavior
-        }
-
-        @Override
-        void evaluate() throws Throwable {
-            println "Running behavior block"
-            setDelegateForSpecClosure(behavior.block)
-
-            behavior.block()
-
-            this.statement.evaluate()
-        }
-    }
-
-    class RulesStatement extends Statement {
-
-        private Statement statement
-        private List<TestRule> testRules
-        private List<MethodRule> methodRules
-        private FrameworkMethod method
-        private Spec specInstance
-        private Description behaviorDescription
-
-        public RulesStatement (Spec specInstance, Description behaviorDescription, Statement statement) {
-            this.statement = statement
-            this.testRules = getTestRules(specInstance)
-            this.methodRules = getMethodRules(specInstance)
-            this.method = getFrameworkMethod(specInstance)
-            this.specInstance = specInstance
-            this.behaviorDescription = behaviorDescription
-        }
-
-        @Override
-        void evaluate() throws Throwable {
-            Statement updatedStatement = this.statement
-
-            this.methodRules.each { rule -> updatedStatement = rule.apply(updatedStatement, method, specInstance) }
-            this.testRules.each { rule -> updatedStatement = rule.apply(updatedStatement, behaviorDescription) }
-
-            updatedStatement.evaluate()
-        }
-
-        private List<TestRule> getTestRules(Spec spec) {
-            List<TestRule> rules = testClass.getAnnotatedFieldValues(spec, Rule.class, TestRule.class)
-            rules.addAll(testClass.getAnnotatedMethodValues(spec, Rule.class, TestRule.class))
-
-            return rules
-        }
-
-        private List<MethodRule> getMethodRules(Spec spec) {
-            List<MethodRule> rules = testClass.getAnnotatedFieldValues(spec, Rule.class, MethodRule.class)
-            rules.addAll(testClass.getAnnotatedMethodValues(spec, Rule.class, MethodRule.class))
-
-            return rules
-        }
-
-        private FrameworkMethod getFrameworkMethod (Spec spec) {
-            return new FrameworkMethod(getSpecMethod(spec))
-        }
-    }
-
-    class AssumptionsStatement extends Statement {
-
-        private Statement statement;
-        private List<Closure> assumptions;
-
-        public AssumptionsStatement (List<Closure> assumptions, Statement statement) {
-            this.statement = statement
-            this.assumptions = assumptions
-        }
-
-        @Override
-        void evaluate() throws Throwable {
-            this.assumptions.each { assumption ->
-                println "Running assumption"
-                setDelegateForSpecClosure(assumption)
-                assumption()
-            }
-
-            this.statement.evaluate()
-        }
-    }
-
-    class FinalizerStatement extends Statement {
-
-        private List<Closure> finalizers
-
-        public FinalizerStatement (List<Closure> finalizers) {
-            this.finalizers = finalizers
-        }
-
-        @Override
-        void evaluate() throws Throwable {
-            this.finalizers.forEach { block ->
-                println "Running finalizer"
-                setDelegateForSpecClosure(block)
-                block()
-            }
-        }
     }
 }

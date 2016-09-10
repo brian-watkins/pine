@@ -4,13 +4,15 @@ Pine is a JUnit test runner that allows you to write specs in the style of RSpec
 
 ### Getting Started
 
-Add both Pine and Groovy as test-time dependencies. Currently, Pine is only available as a standalone jar. If you're using Gradle, here's how to add it as a dependency via your `build.gradle` file:
+Currently, Pine is only available as a standalone jar. If you're using Gradle, here's how to add it as a dependency via your `build.gradle` file:
 
 ```
 dependencies {
 	testCompile files('lib/pine-1.0-SNAPSHOT.jar')
 }
 ```
+
+Also, add Groovy as a dependency and the Groovy Gradle plugin. There's a [helpful plugin](https://github.com/bwatkinsPivotal/pine-intellij-plugin) to run Pine specs using Gradle via Intellij.
 
 ### Writing Specs
 
@@ -126,6 +128,12 @@ public class MySpec implements Spec {
 
 }
 ```
+
+#### Other Helpful Annotations
+
+Use `@Assume` to annotate methods that should be run before each spec, prior to any `assume` blocks. This can be useful when putting setup code in a script base class, for example. 
+
+Note: methods annotated with `@Assume` do not work with `@SpecDelegate`.  
 
 ### Example: Writing Spring Controller Tests
 
