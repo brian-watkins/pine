@@ -1,11 +1,21 @@
 package org.pine.statement
 
+import org.junit.runners.model.Statement
 import org.pine.Spec
 import org.pine.SpecClass
 import org.pine.annotation.SpecDelegate
 
-public class SpecStatementHelper {
-    public static void setDelegateForSpecClosure(SpecClass specClass, Spec specInstance, Closure block) {
+abstract class SpecStatement extends Statement {
+
+    SpecClass specClass
+    Spec specInstance
+
+    public SpecStatement (SpecClass specClass, Spec specInstance) {
+        this.specClass = specClass
+        this.specInstance = specInstance
+    }
+
+    protected void setDelegateForSpecClosure(Closure block) {
         Optional<Object> scriptDelegate = specClass.getAnnotatedFieldValues(specInstance, SpecDelegate, Object).stream().findFirst()
         if (scriptDelegate.present) {
             println "Using spec delegate!"

@@ -11,21 +11,20 @@ import org.pine.SpecClass
 import org.pine.annotation.SpecDelegate
 import org.pine.util.ReflectionUtils
 
-class RulesStatement extends Statement {
+class RulesStatement extends SpecStatement {
 
     private Statement statement
     private List<TestRule> testRules
     private List<MethodRule> methodRules
     private FrameworkMethod method
-    private Spec specInstance
     private Description behaviorDescription
 
     public RulesStatement (SpecClass specClass, Spec specInstance, FrameworkMethod specMethod, Description behaviorDescription, Statement statement) {
+        super(specClass, specInstance)
         this.statement = statement
         this.testRules = getTestRules(specClass, specInstance)
         this.methodRules = getMethodRules(specClass, specInstance)
         this.method = specMethod
-        this.specInstance = specInstance
         this.behaviorDescription = behaviorDescription
     }
 
@@ -33,7 +32,7 @@ class RulesStatement extends Statement {
     void evaluate() throws Throwable {
         Statement updatedStatement = this.statement
 
-        this.methodRules.each { rule -> updatedStatement = rule.apply(updatedStatement, method, specInstance) }
+        this.methodRules.each { rule -> updatedStatement = rule.apply(updatedStatement, method, getSpecInstance()) }
         this.testRules.each { rule -> updatedStatement = rule.apply(updatedStatement, behaviorDescription) }
 
         updatedStatement.evaluate()

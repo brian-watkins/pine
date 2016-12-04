@@ -6,34 +6,29 @@ import org.pine.Spec
 import org.pine.SpecClass
 import org.pine.annotation.Assume
 
-import static org.pine.statement.SpecStatementHelper.setDelegateForSpecClosure
-
-class AssumptionsStatement extends Statement {
+class AssumptionsStatement extends SpecStatement {
 
     private Statement statement
     private List<Closure> assumptions
     private List<FrameworkMethod> assumptionMethods
-    private Spec spec
-    private SpecClass specClass
 
     public AssumptionsStatement (SpecClass specClass, Spec specInstance, List<Closure> assumptions, Statement statement) {
+        super(specClass, specInstance)
         this.statement = statement
         this.assumptions = assumptions
-        this.spec = specInstance
         this.assumptionMethods = specClass.getAnnotatedMethods(Assume)
-        this.specClass = specClass
     }
 
     @Override
     void evaluate() throws Throwable {
         this.assumptionMethods.each { assumptionMethod ->
             println "Running assumption method: ${assumptionMethod.name}"
-            assumptionMethod.invokeExplosively(spec)
+            assumptionMethod.invokeExplosively(getSpecInstance())
         }
 
         this.assumptions.each { assumption ->
             println "Running assumption block"
-            setDelegateForSpecClosure(specClass, spec, assumption)
+            setDelegateForSpecClosure(assumption)
             assumption()
         }
 
