@@ -2,9 +2,9 @@ package org.pine
 
 import org.junit.runners.model.FrameworkMethod
 import org.junit.runners.model.TestClass
+import org.pine.util.ReflectionUtils
 
 import java.lang.annotation.Annotation
-import java.lang.reflect.Field
 import java.lang.reflect.Modifier
 import java.util.stream.Collectors
 
@@ -26,23 +26,7 @@ public class SpecClass extends TestClass {
 
     @Override
     public <T> List<T> getAnnotatedFieldValues(Object specScriptInstance, Class<? extends Annotation> annotationClass, Class<T> valueClass) {
-        return Arrays.asList(this.specClass.getFields()).stream()
-                .filter({ field -> field.isAnnotationPresent(annotationClass) })
-                .map({ field -> getFieldValue(field, specScriptInstance) })
-                .filter({ fieldValue -> valueClass.isInstance(fieldValue) })
-                .collect(Collectors.toList())
-    }
-
-    private Object getFieldValue(Field field, Object instance) {
-        if (instance != null || Modifier.isStatic(field.getModifiers())) {
-
-            Object value = field.get(instance)
-            println "Getting instance of ${value} from instance: ${instance}"
-
-            return value
-        }
-
-        return null;
+        ReflectionUtils.getAnnotatedFieldValues(this.specClass, specScriptInstance, annotationClass, valueClass)
     }
 
     @Override

@@ -88,8 +88,8 @@ class SpecRunner extends ParentRunner<Behavior> {
         Behavior behavior = spec.behaviors.find{ b -> b.name == child.name }
         Description description = describeChild(behavior)
 
-        Statement childStatement = new CleanStatement(specClass, behavior.cleaners)
-        childStatement = new BehaviorStatement(specClass, behavior, childStatement)
+        Statement childStatement = new CleanStatement(specClass, spec, behavior.cleaners)
+        childStatement = new BehaviorStatement(specClass, spec, behavior, childStatement)
         childStatement = new AssumptionsStatement(specClass, spec, behavior.assumptions, childStatement)
         childStatement = new RulesStatement(specClass, spec, getSpecMethod(spec), description, childStatement)
 

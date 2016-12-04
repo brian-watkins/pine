@@ -206,5 +206,52 @@ class RuleTest {
     public void itAddsAndAppliesAJUnitMethodRuleOnAMethod () {
         TestHelper.assertSpecRuns(RuleTest_6, 0, 1, true)
     }
+
+    @Test
+    public void itRunsARuleDefinedInADelegate() {
+        String script = '''
+import org.pine.annotation.*
+import org.pine.testHelpers.*
+
+@groovy.transform.BaseScript org.pine.script.SpecScript spec
+
+@SpecDelegate @groovy.transform.Field
+public FunSpecRuleDelegate delegate = new FunSpecRuleDelegate()
+
+describe 'spec', {
+    it 'runs a spec', {
+        assert getFun() == "bowling"
+    }
+}
+'''
+
+        Class specScriptClass = TestHelper.getClassForScript(script)
+
+        TestHelper.assertSpecRuns(specScriptClass, 0, 1, true)
+    }
+
+    @Test
+    public void itRunsARuleDefinedInTheSuperClassOfADelegate() {
+        String script = '''
+import org.pine.annotation.*
+import org.pine.testHelpers.*
+
+@groovy.transform.BaseScript org.pine.script.SpecScript spec
+
+@SpecDelegate @groovy.transform.Field
+public FunSpecSuperclassRuleDelegate delegate = new FunSpecSuperclassRuleDelegate()
+
+describe 'spec', {
+    it 'runs a spec', {
+        assert getFun() == "bowling"
+    }
+}
+'''
+
+        Class specScriptClass = TestHelper.getClassForScript(script)
+
+        TestHelper.assertSpecRuns(specScriptClass, 0, 1, true)
+    }
+
 }
 

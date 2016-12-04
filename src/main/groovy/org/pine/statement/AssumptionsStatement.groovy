@@ -33,7 +33,7 @@ class AssumptionsStatement extends Statement {
 
         this.assumptions.each { assumption ->
             println "Running assumption block"
-            setDelegateForSpecClosure(specClass, assumption)
+            setDelegateForSpecClosure(specClass, spec, assumption)
             assumption()
         }
 

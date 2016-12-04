@@ -33,6 +33,31 @@ it 'runs a spec', {
     }
 
     @Test
+    public void itAssignsADelegateToTheBehaviorClosureWithinOtherClosures() {
+        String script = '''
+import org.pine.annotation.*
+import org.pine.testHelpers.*
+
+@groovy.transform.BaseScript org.pine.script.SpecScript spec
+
+@SpecDelegate @groovy.transform.Field
+public FunSpecDelegate delegate = new FunSpecDelegate()
+
+describe 'some spec', {
+    when 'there is a delegate', {
+        it 'runs a spec that is aware ofthe delegate', {
+            assert getFun() == "Bowling!"
+        }
+    }
+}
+'''
+
+        Class specScriptClass = TestHelper.getClassForScript(script)
+
+        TestHelper.assertSpecRuns(specScriptClass, 0, 1, true)
+    }
+
+    @Test
     public void itAssignsADelegateToTheAssumeClosure() {
         String script = '''
 import org.pine.annotation.*
@@ -45,12 +70,14 @@ public FunSpecDelegate delegate = new FunSpecDelegate()
 
 def myFunThing = "swimming"
 
-assume {
-    myFunThing = getFun()
-}
+describe 'my spec', {
+    assume {
+        myFunThing = getFun()
+    }
 
-it 'runs a spec', {
-    assert myFunThing == "Bowling!"
+    it 'runs a spec', {
+        assert myFunThing == "Bowling!"
+    }
 }
 '''
 
@@ -103,8 +130,10 @@ import groovy.transform.*
 @SpecDelegate @Field
 public FunSpecDelegate delegate
 
-it 'runs a spec', {
-    assert getFun() == "Bowling!"
+describe 'some spec', {
+    it 'runs a spec', {
+        assert getFun() == "Bowling!"
+    }
 }
 '''
 
@@ -112,4 +141,5 @@ it 'runs a spec', {
 
         TestHelper.assertSpecRuns(specScriptClass, 0, 1, true)
     }
+
 }

@@ -8,6 +8,8 @@ import org.junit.runners.model.FrameworkMethod
 import org.junit.runners.model.Statement
 import org.pine.Spec
 import org.pine.SpecClass
+import org.pine.annotation.SpecDelegate
+import org.pine.util.ReflectionUtils
 
 class RulesStatement extends Statement {
 
@@ -40,8 +42,24 @@ class RulesStatement extends Statement {
     private List<TestRule> getTestRules(SpecClass specClass, Spec spec) {
         List<TestRule> rules = specClass.getAnnotatedFieldValues(spec, Rule.class, TestRule.class)
         rules.addAll(specClass.getAnnotatedMethodValues(spec, Rule.class, TestRule.class))
+        rules.addAll(getTestRulesForDelegate(specClass, spec))
 
         return rules
+    }
+
+    private List<TestRule> getTestRulesForDelegate(SpecClass specClass, Spec spec) {
+        List<TestRule> delegateRules;
+
+        Optional<Object> scriptDelegate = specClass.getAnnotatedFieldValues(spec, SpecDelegate, Object).stream().findFirst()
+        if (scriptDelegate.present) {
+            delegateRules = ReflectionUtils.getAnnotatedFieldValues(scriptDelegate.get().class, scriptDelegate.get(), Rule.class, TestRule.class)
+            println "Found ${delegateRules.size()} delegate rules"
+        } else {
+            println "No delegate to look for rules in"
+            delegateRules = new ArrayList<>()
+        }
+
+        return delegateRules
     }
 
     private List<MethodRule> getMethodRules(SpecClass specClass, Spec spec) {
