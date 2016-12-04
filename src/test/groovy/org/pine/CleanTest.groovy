@@ -11,27 +11,27 @@ import org.pine.testHelpers.SpecTestRunListener
 import static org.pine.testHelpers.TestHelper.assertBehaviorPasses
 import static org.pine.testHelpers.TestHelper.assertSpecRuns
 
-class FinalizeTest {
+class CleanTest {
 
     static class OrderRecorder {
         static def order = new ArrayList<String>()
     }
 
     @RunWith(SpecRunner)
-    static class FinalizeSpec implements Spec {
+    static class CleanSpec implements Spec {
 
         int someNumber = 0
 
-        @Describe("Finally Block Spec")
+        @Describe("Clean Block Spec")
         def spec() {
 
-            finalize {
-                OrderRecorder.order.add("finalizer 1")
+            clean {
+                OrderRecorder.order.add("clean 1")
                 someNumber = 1
             }
 
-            finalize {
-                OrderRecorder.order.add("finalizer 2")
+            clean {
+                OrderRecorder.order.add("clean 2")
             }
 
             it 'runs a spec', {
@@ -53,33 +53,33 @@ class FinalizeTest {
     }
 
     @Test
-    public void itRunsTheFinalizeBlocksInOrderAfterABehavior () {
-        SpecRunner runner = new SpecRunner(FinalizeSpec)
+    public void itRunsTheCleanBlocksInOrderAfterABehavior () {
+        SpecRunner runner = new SpecRunner(CleanSpec)
         assertBehaviorPasses(runner, runner.getChildren()[0])
 
-        assert OrderRecorder.order == [ 'spec', 'finalizer 1', 'finalizer 2' ]
+        assert OrderRecorder.order == [ 'spec', 'clean 1', 'clean 2' ]
     }
 
     @Test
-    public void itRunsTheFinalizeBlocksAfterEachBehavior () {
-        SpecRunner runner = new SpecRunner(FinalizeSpec)
-        assertSpecRuns(FinalizeSpec, 0, 2, true)
+    public void itRunsTheCleanBlocksAfterEachBehavior () {
+        SpecRunner runner = new SpecRunner(CleanSpec)
+        assertSpecRuns(CleanSpec, 0, 2, true)
 
-        assert OrderRecorder.order == [ 'spec', 'finalizer 1', 'finalizer 2', 'other spec', 'finalizer 1', 'finalizer 2' ]
+        assert OrderRecorder.order == [ 'spec', 'clean 1', 'clean 2', 'other spec', 'clean 1', 'clean 2' ]
     }
 
     @RunWith(SpecRunner)
-    static class FinalizeContextsSpec implements Spec {
+    static class CleanContextsSpec implements Spec {
 
         int someNumber = 0
 
-        @Describe("Finally Block Spec")
+        @Describe("Clean Block Spec")
         def spec() {
 
             when 'things are the case', {
 
-                finalize {
-                    OrderRecorder.order.add("finalizer 1")
+                clean {
+                    OrderRecorder.order.add("clean 1")
                 }
 
                 it 'runs a spec', {
@@ -91,8 +91,8 @@ class FinalizeTest {
 
             when 'things are not the case', {
 
-                finalize {
-                    OrderRecorder.order.add("finalizer 2")
+                clean {
+                    OrderRecorder.order.add("clean 2")
                 }
 
                 it 'does other things', {
@@ -106,32 +106,32 @@ class FinalizeTest {
     }
 
     @Test
-    public void itRunsOnlyTheFinalizerBlocksForTheBehaviorContext () {
-        SpecRunner runner = new SpecRunner(FinalizeContextsSpec)
+    public void itRunsOnlyTheCleanBlocksForTheBehaviorContext () {
+        SpecRunner runner = new SpecRunner(CleanContextsSpec)
 
         assertBehaviorPasses(runner, runner.getChildren()[0])
-        assert OrderRecorder.order == [ 'spec', 'finalizer 1' ]
+        assert OrderRecorder.order == [ 'spec', 'clean 1' ]
 
         OrderRecorder.order.clear()
 
         assertBehaviorPasses(runner, runner.getChildren()[1])
-        assert OrderRecorder.order == [ 'other spec', 'finalizer 2' ]
+        assert OrderRecorder.order == [ 'other spec', 'clean 2' ]
     }
 
     @RunWith(SpecRunner)
-    static class FinalizeNestedContextsSpec implements Spec {
+    static class CleanNestedContextsSpec implements Spec {
 
         int someNumber = 0
 
-        @Describe("Finally Block Spec")
+        @Describe("Clean Block Spec")
         def spec() {
 
             when 'something happens', {
 
                 when 'things are the case', {
 
-                    finalize {
-                        OrderRecorder.order.add("finalizer 1")
+                    clean {
+                        OrderRecorder.order.add("clean 1")
                     }
 
                     it 'runs a spec', {
@@ -141,29 +141,29 @@ class FinalizeTest {
 
                 }
 
-                finalize {
-                    OrderRecorder.order.add("finalizer 2")
+                clean {
+                    OrderRecorder.order.add("clean 2")
                 }
 
-                finalize {
-                    OrderRecorder.order.add("finalizer 3")
+                clean {
+                    OrderRecorder.order.add("clean 3")
                 }
 
             }
 
-            finalize {
-                OrderRecorder.order.add("finalizer 4")
+            clean {
+                OrderRecorder.order.add("clean 4")
             }
 
         }
     }
 
     @Test
-    public void itRunsNestedFinalizerBlocksInOrderFromInsideOut () {
-        SpecRunner runner = new SpecRunner(FinalizeNestedContextsSpec)
+    public void itRunsNestedCleanBlocksInOrderFromInsideOut () {
+        SpecRunner runner = new SpecRunner(CleanNestedContextsSpec)
 
         assertBehaviorPasses(runner, runner.getChildren()[0])
-        assert OrderRecorder.order == [ 'spec', 'finalizer 1', 'finalizer 2', 'finalizer 3', 'finalizer 4' ]
+        assert OrderRecorder.order == [ 'spec', 'clean 1', 'clean 2', 'clean 3', 'clean 4' ]
     }
 
 }

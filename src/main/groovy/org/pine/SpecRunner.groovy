@@ -10,7 +10,7 @@ import org.junit.runners.model.TestClass
 import org.pine.annotation.Describe
 import org.pine.statement.AssumptionsStatement
 import org.pine.statement.BehaviorStatement
-import org.pine.statement.FinalizerStatement
+import org.pine.statement.CleanStatement
 import org.pine.statement.RulesStatement
 
 class SpecRunner extends ParentRunner<Behavior> {
@@ -88,7 +88,7 @@ class SpecRunner extends ParentRunner<Behavior> {
         Behavior behavior = spec.behaviors.find{ b -> b.name == child.name }
         Description description = describeChild(behavior)
 
-        Statement childStatement = new FinalizerStatement(specClass, behavior.finalizers)
+        Statement childStatement = new CleanStatement(specClass, behavior.cleaners)
         childStatement = new BehaviorStatement(specClass, behavior, childStatement)
         childStatement = new AssumptionsStatement(specClass, spec, behavior.assumptions, childStatement)
         childStatement = new RulesStatement(specClass, spec, getSpecMethod(spec), description, childStatement)

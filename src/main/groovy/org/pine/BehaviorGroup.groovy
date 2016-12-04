@@ -6,15 +6,15 @@ class BehaviorGroup {
 
     private List<Closure> assumptions = []
     private List<Behavior> behaviors = []
-    private List<Closure> finalizers = []
+    private List<Closure> cleaners = []
     private List<BehaviorGroup> subGroups = []
 
     def addAssumption (Closure c) {
         assumptions << c
     }
 
-    def addFinalizer (Closure c) {
-        finalizers << c
+    def addCleaner (Closure c) {
+        cleaners << c
     }
 
     def addBehavior (Behavior behavior) {
@@ -41,13 +41,13 @@ class BehaviorGroup {
         return assumptions
     }
 
-    def List<Closure> collectFinalizers() {
-        def allFinalizers = []
+    def List<Closure> collectCleaners() {
+        def allCleaners = []
 
-        allFinalizers.addAll(this.finalizers)
-        allFinalizers.addAll(superGroup?.collectFinalizers() ?: [])
+        allCleaners.addAll(this.cleaners)
+        allCleaners.addAll(superGroup?.collectCleaners() ?: [])
 
-        return allFinalizers
+        return allCleaners
     }
 
     def List<String> collectNames() {

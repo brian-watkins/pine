@@ -12,8 +12,8 @@ class Behavior {
         group.collectAssumptions()
     }
 
-    def List<Closure> getFinalizers() {
-        group.collectFinalizers()
+    def List<Closure> getCleaners() {
+        group.collectCleaners()
     }
 
     def String getDisplayName() {

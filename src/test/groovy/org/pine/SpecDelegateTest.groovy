@@ -60,7 +60,7 @@ it 'runs a spec', {
     }
 
     @Test
-    public void itAssignsADelegateToTheFinalizerClosure() {
+    public void itAssignsADelegateToTheCleanClosure() {
         String script = '''
 import org.pine.annotation.*
 import org.pine.testHelpers.*
@@ -72,7 +72,7 @@ public FunSpecDelegate delegate = new FunSpecDelegate()
 
 def myFunThing = "swimming"
 
-finalize {
+clean {
     myFunThing = getFun()
 }
 

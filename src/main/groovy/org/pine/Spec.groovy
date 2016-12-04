@@ -63,9 +63,9 @@ trait Spec {
         currentBehaviorGroup = behaviorGroup.superGroup
     }
 
-    def finalize (Closure block) {
-        println "Finalizer"
-        currentBehaviorGroup.addFinalizer(block)
+    def clean (Closure block) {
+        println "Clean"
+        currentBehaviorGroup.addCleaner(block)
     }
 
 }
