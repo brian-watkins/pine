@@ -2,9 +2,8 @@ package org.pine
 
 import org.junit.Before
 import org.junit.Test
-import org.junit.runner.notification.RunNotifier
 import org.pine.annotation.Describe
-import org.pine.testHelpers.SpecTestRunListener
+import org.pine.behavior.Behavior
 
 import static org.pine.testHelpers.TestHelper.assertBehaviorPasses
 

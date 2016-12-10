@@ -1,4 +1,4 @@
-package org.pine
+package org.pine.util
 
 import org.junit.runners.model.FrameworkMethod
 import org.junit.runners.model.TestClass

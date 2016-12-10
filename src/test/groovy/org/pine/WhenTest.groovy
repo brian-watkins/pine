@@ -2,6 +2,7 @@ package org.pine
 
 import org.junit.Test
 import org.pine.annotation.Describe
+import org.pine.behavior.Behavior
 
 import java.util.stream.Collectors
 
@@ -50,7 +51,7 @@ class WhenTest {
 
         assert behaviors.size() == 6
 
-        def behaviorNames = behaviors.stream().map({ b -> b.displayName }).collect(Collectors.toList())
+        def behaviorNames = behaviors.stream().map({ b -> b.name }).collect(Collectors.toList())
 
         assert behaviorNames.contains("it always works")
         assert behaviorNames.contains("it still works")

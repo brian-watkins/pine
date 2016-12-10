@@ -1,23 +1,24 @@
 package org.pine.statement
 
 import org.pine.Spec
-import org.pine.SpecClass
+import org.pine.util.SpecClass
+import org.pine.block.ConfigurationBlock
 
 class CleanStatement extends SpecStatement {
 
-    private List<Closure> cleaners
+    private List<ConfigurationBlock> cleaners
 
-    public CleanStatement(SpecClass specClass, Spec specInstance, List<Closure> cleaners) {
+    public CleanStatement(SpecClass specClass, Spec specInstance, List<ConfigurationBlock> cleaners) {
         super(specClass, specInstance)
         this.cleaners = cleaners
     }
 
     @Override
     void evaluate() throws Throwable {
-        this.cleaners.forEach { block ->
+        this.cleaners.forEach { cleaner ->
             println "Running cleaner"
-            setDelegateForSpecClosure(block)
-            block()
+            setDelegateForSpecClosure(cleaner.block)
+            cleaner.block()
         }
     }
 }

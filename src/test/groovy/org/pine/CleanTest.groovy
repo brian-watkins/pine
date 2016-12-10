@@ -17,7 +17,6 @@ class CleanTest {
         static def order = new ArrayList<String>()
     }
 
-    @RunWith(SpecRunner)
     static class CleanSpec implements Spec {
 
         int someNumber = 0
@@ -63,12 +62,12 @@ class CleanTest {
     @Test
     public void itRunsTheCleanBlocksAfterEachBehavior () {
         SpecRunner runner = new SpecRunner(CleanSpec)
-        assertSpecRuns(CleanSpec, 0, 2, true)
+        assertBehaviorPasses(runner, runner.getChildren()[0])
+        assertBehaviorPasses(runner, runner.getChildren()[1])
 
         assert OrderRecorder.order == [ 'spec', 'clean 1', 'clean 2', 'other spec', 'clean 1', 'clean 2' ]
     }
 
-    @RunWith(SpecRunner)
     static class CleanContextsSpec implements Spec {
 
         int someNumber = 0
@@ -118,7 +117,6 @@ class CleanTest {
         assert OrderRecorder.order == [ 'other spec', 'clean 2' ]
     }
 
-    @RunWith(SpecRunner)
     static class CleanNestedContextsSpec implements Spec {
 
         int someNumber = 0
@@ -167,3 +165,4 @@ class CleanTest {
     }
 
 }
+

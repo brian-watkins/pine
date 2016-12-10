@@ -140,6 +140,10 @@ Note: methods annotated with `@Assume` do not work with `@SpecDelegate`.
 
 TBD
 
+### Journey Specs
+
+You can also write journey specs with Pine. 
+
 ### Development
 
 To run the tests:

@@ -1,35 +1,27 @@
 package org.pine.statement
 
-import org.junit.runners.model.FrameworkMethod
 import org.junit.runners.model.Statement
 import org.pine.Spec
-import org.pine.SpecClass
-import org.pine.annotation.Assume
+import org.pine.util.SpecClass
+import org.pine.block.ConfigurationBlock
 
 class AssumptionsStatement extends SpecStatement {
 
     private Statement statement
-    private List<Closure> assumptions
-    private List<FrameworkMethod> assumptionMethods
+    private List<ConfigurationBlock> assumptions
 
-    public AssumptionsStatement (SpecClass specClass, Spec specInstance, List<Closure> assumptions, Statement statement) {
+    public AssumptionsStatement (SpecClass specClass, Spec specInstance, List<ConfigurationBlock> assumptions, Statement statement) {
         super(specClass, specInstance)
         this.statement = statement
         this.assumptions = assumptions
-        this.assumptionMethods = specClass.getAnnotatedMethods(Assume)
     }
 
     @Override
     void evaluate() throws Throwable {
-        this.assumptionMethods.each { assumptionMethod ->
-            println "Running assumption method: ${assumptionMethod.name}"
-            assumptionMethod.invokeExplosively(getSpecInstance())
-        }
-
         this.assumptions.each { assumption ->
             println "Running assumption block"
-            setDelegateForSpecClosure(assumption)
-            assumption()
+            setDelegateForSpecClosure(assumption.block)
+            assumption.block()
         }
 
         this.statement.evaluate()

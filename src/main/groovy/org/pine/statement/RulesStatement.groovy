@@ -7,7 +7,7 @@ import org.junit.runner.Description
 import org.junit.runners.model.FrameworkMethod
 import org.junit.runners.model.Statement
 import org.pine.Spec
-import org.pine.SpecClass
+import org.pine.util.SpecClass
 import org.pine.annotation.SpecDelegate
 import org.pine.util.ReflectionUtils
 

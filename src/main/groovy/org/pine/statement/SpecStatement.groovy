@@ -2,7 +2,7 @@ package org.pine.statement
 
 import org.junit.runners.model.Statement
 import org.pine.Spec
-import org.pine.SpecClass
+import org.pine.util.SpecClass
 import org.pine.annotation.SpecDelegate
 
 abstract class SpecStatement extends Statement {

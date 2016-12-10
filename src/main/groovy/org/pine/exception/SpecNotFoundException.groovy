@@ -1,4 +1,4 @@
-package org.pine
+package org.pine.exception
 
 class SpecNotFoundException extends RuntimeException {
 

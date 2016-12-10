@@ -8,16 +8,20 @@ import org.junit.runners.model.InitializationError
 import org.junit.runners.model.Statement
 import org.junit.runners.model.TestClass
 import org.pine.annotation.Describe
-import org.pine.statement.AssumptionsStatement
-import org.pine.statement.BehaviorStatement
-import org.pine.statement.CleanStatement
+import org.pine.behavior.Behavior
 import org.pine.statement.RulesStatement
+import org.pine.statement.SpecAssumptionsStatement
+import org.pine.exception.SpecNotFoundException
+import org.pine.util.SpecClass
+import org.pine.visitor.FeatureSpecVisitor
+import org.pine.visitor.JourneySpecVisitor
+import org.pine.visitor.SpecVisitor
+import org.pine.visitor.SpecVisitorFactory
 
 class SpecRunner extends ParentRunner<Behavior> {
 
     SpecClass specClass
     def behaviors = []
-    private boolean hasFocusedBehaviors = false
 
     public SpecRunner(Class<?> testClass) throws InitializationError {
         super(testClass)
@@ -25,7 +29,6 @@ class SpecRunner extends ParentRunner<Behavior> {
         this.specClass = (SpecClass) getTestClass()
 
         Spec spec = getSpec()
-        hasFocusedBehaviors = spec.hasFocusedBehaviors
         this.behaviors = spec.getBehaviors()
     }
 
@@ -36,12 +39,11 @@ class SpecRunner extends ParentRunner<Behavior> {
 
     public Spec getSpec() {
         Spec spec = (Spec) specClass.getSpecClass().newInstance()
+        SpecVisitor specVisitor = SpecVisitorFactory.specVisitorForSpec(spec)
+        specVisitor.visit(specClass)
+        spec.setSpecVisitor(specVisitor)
 
         getSpecMethod(spec).invokeExplosively(spec)
-
-        if (spec.specName == null) {
-            setSpecName(spec)
-        }
 
         return spec
     }
@@ -56,12 +58,6 @@ class SpecRunner extends ParentRunner<Behavior> {
                 .orElseThrow(SpecNotFoundException.metaClass.&invokeConstructor)
     }
 
-    private void setSpecName (Spec spec) {
-        FrameworkMethod specMethod = testClass.getAnnotatedMethods(Describe).stream()
-                .findFirst().orElse(null)
-        spec.setSpecName(specMethod?.getAnnotation(Describe.class)?.value() ?: spec.class.name)
-    }
-
     @Override
     protected List<Behavior> getChildren() {
         return behaviors
@@ -69,12 +65,12 @@ class SpecRunner extends ParentRunner<Behavior> {
 
     @Override
     protected Description describeChild(Behavior child) {
-        return Description.createTestDescription(testClass.getName(), child.getDisplayName())
+        return Description.createTestDescription(testClass.getName(), child.getName())
     }
 
     @Override
     protected void runChild(Behavior child, RunNotifier notifier) {
-        if (child.isIgnored() || ( hasFocusedBehaviors && !child.isFocused() )) {
+        if (!child.shouldRun()) {
             notifier.fireTestIgnored(describeChild(child))
             return
         }
@@ -85,12 +81,11 @@ class SpecRunner extends ParentRunner<Behavior> {
 
         println "Running behavior ..."
 
-        Behavior behavior = spec.behaviors.find{ b -> b.name == child.name }
+        Behavior behavior = spec.getBehaviors().find { b -> b.name == child.name }
         Description description = describeChild(behavior)
 
-        Statement childStatement = new CleanStatement(specClass, spec, behavior.cleaners)
-        childStatement = new BehaviorStatement(specClass, spec, behavior, childStatement)
-        childStatement = new AssumptionsStatement(specClass, spec, behavior.assumptions, childStatement)
+        Statement childStatement = behavior.createStatement(specClass, spec)
+        childStatement = new SpecAssumptionsStatement(specClass, spec, childStatement)
         childStatement = new RulesStatement(specClass, spec, getSpecMethod(spec), description, childStatement)
 
         runLeaf(childStatement, description, notifier)

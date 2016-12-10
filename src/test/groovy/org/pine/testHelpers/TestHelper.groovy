@@ -1,11 +1,9 @@
 package org.pine.testHelpers
 
 import org.junit.runner.JUnitCore
-import org.junit.runner.Request
 import org.junit.runner.Result
 import org.junit.runner.notification.RunNotifier
-import org.pine.Behavior
-import org.pine.Spec
+import org.pine.behavior.Behavior
 import org.pine.SpecRunner
 
 class TestHelper {

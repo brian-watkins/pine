@@ -5,6 +5,7 @@ import org.junit.Test
 import org.junit.runner.notification.RunNotifier
 import org.pine.annotation.Describe
 import org.pine.testHelpers.SpecTestRunListener
+import org.pine.exception.SpecNotFoundException
 
 import static groovy.test.GroovyAssert.shouldFail
 import static org.assertj.core.api.Assertions.*;

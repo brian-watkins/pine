@@ -2,6 +2,7 @@ package org.pine
 
 import org.junit.Test
 import org.pine.testHelpers.FunAnnotation
+import org.pine.util.SpecClass
 
 class SpecClassTest {
 

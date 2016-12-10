@@ -1,71 +1,64 @@
 package org.pine
 
-import static org.pine.BehaviorRunModifier.*
+import org.pine.behavior.Behavior
+import org.pine.visitor.SpecVisitor
+import org.pine.block.*
 
 trait Spec {
 
-    BehaviorGroup root = new BehaviorGroup()
-    BehaviorGroup currentBehaviorGroup = root
-    String specName
-    boolean hasFocusedBehaviors = false
+    SpecVisitor specVisitor
 
-    def List<Behavior> getBehaviors () {
-        return root.collectBehaviors()
+    public List<Behavior> getBehaviors() {
+        return specVisitor.getBehaviors()
     }
 
     def describe(String name, Closure block) {
-        this.specName = name
-
+        println "Describe ${name}"
+        specVisitor.visitRootContext(new ContextBlock(name))
         block(this.&it)
     }
 
     def fit (String name, Closure block) {
-        addBehavior(name, block, FOCUSED)
+        addBehavior(name, block, ExampleRunModifier.FOCUSED)
     }
 
     def xit (String name, Closure block) {
-        addBehavior(name, block, IGNORED)
+        addBehavior(name, block, ExampleRunModifier.IGNORED)
     }
 
     def it (String name, Closure block) {
-        addBehavior(name, block, NONE)
+        addBehavior(name, block, ExampleRunModifier.NONE)
     }
 
-    private def addBehavior (String name, Closure block, BehaviorRunModifier runModifier) {
+    private def addBehavior (String name, Closure block, ExampleRunModifier runModifier) {
         System.out.println("it ${name}")
 
-        Behavior behavior = new Behavior()
-        behavior.name = name
-        behavior.block = block
-        behavior.runModifier = runModifier
+        ExampleBlock node = new ExampleBlock()
+        node.name = name
+        node.block = block
+        node.runModifier = runModifier
 
-        currentBehaviorGroup.addBehavior(behavior)
-
-        if (!hasFocusedBehaviors) {
-            hasFocusedBehaviors = runModifier == FOCUSED
-        }
+        specVisitor.visit(node)
     }
 
     def assume (Closure block) {
         System.out.println("assume")
-        currentBehaviorGroup.addAssumption(block)
+        specVisitor.visitAssumptionBlock(new ConfigurationBlock(block))
     }
 
     def when (String name, Closure block) {
         println "When ${name}"
-        BehaviorGroup behaviorGroup = new BehaviorGroup()
-        behaviorGroup.name = name
-        currentBehaviorGroup.addSubGroup(behaviorGroup)
-        currentBehaviorGroup = behaviorGroup
+        ContextBlock node = new ContextBlock(name)
+        specVisitor.beginContext(node)
 
         block(this.&it)
 
-        currentBehaviorGroup = behaviorGroup.superGroup
+        specVisitor.endContext(node)
     }
 
     def clean (Closure block) {
         println "Clean"
-        currentBehaviorGroup.addCleaner(block)
+        specVisitor.visitCleanBlock(new ConfigurationBlock(block))
     }
 
 }

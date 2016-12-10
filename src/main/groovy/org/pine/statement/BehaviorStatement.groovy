@@ -1,27 +1,26 @@
 package org.pine.statement
 
 import org.junit.runners.model.Statement
-import org.pine.Behavior
 import org.pine.Spec
-import org.pine.SpecClass
+import org.pine.util.SpecClass
 
 public class BehaviorStatement extends SpecStatement {
 
     private Statement statement
-    private Behavior behavior
+    private Closure block
 
-    public BehaviorStatement (SpecClass specClass, Spec spec, Behavior behavior, Statement statement) {
+    public BehaviorStatement (SpecClass specClass, Spec spec, Closure block, Statement statement) {
         super(specClass, spec)
         this.statement = statement
-        this.behavior = behavior
+        this.block = block
     }
 
     @Override
     void evaluate() throws Throwable {
         println "Running behavior block"
-        setDelegateForSpecClosure(behavior.block)
+        setDelegateForSpecClosure(this.block)
 
-        behavior.block()
+        this.block()
 
         this.statement.evaluate()
     }
