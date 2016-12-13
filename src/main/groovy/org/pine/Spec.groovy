@@ -30,7 +30,7 @@ trait Spec {
         addBehavior(name, block, ExampleRunModifier.NONE)
     }
 
-    private def addBehavior (String name, Closure block, ExampleRunModifier runModifier) {
+    def addBehavior (String name, Closure block, ExampleRunModifier runModifier) {
         System.out.println("it ${name}")
 
         ExampleBlock node = new ExampleBlock()

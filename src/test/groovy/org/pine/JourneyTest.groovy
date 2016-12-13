@@ -498,46 +498,32 @@ describe 'My Journey With Multiple Cleans', {
     }
 
 
-    String personaJourneySpec = '''
-@groovy.transform.BaseScript org.pine.script.JourneySpecScript spec
+    static class SimplePronounJourneySpec implements JourneySpec {
 
-describe "holly", "does some fun stuff", {
+        @Describe(value = "My Journey With Pronouns")
+        def journey () {
+            she 'does one thing', {
+                step += 1
+                assert 1 == step
+            }
 
-    assume {
-        step = 0
-    }
+            he 'does another thing', {
+                step += 1
+                assert 2 == step
+            }
 
-    holly "does one thing", {
-        step += 1
-        assert 1 == step
-    }
-
-    holly "does something else", {
-        step += 5
-        assert 6 == step
-    }
-
-    it "does another thing", {
-        step += 2
-        assert 8 == step
-    }
-
-}
-'''
-
-    @Test
-    public void itNamesTheJourneyWhenThereIsAPersona() {
-        Class specScriptClass = TestHelper.getClassForScript(personaJourneySpec)
-        SpecRunner runner = new SpecRunner(specScriptClass)
-        Spec spec = runner.getSpec()
-
-        assert spec.getBehaviors().get(0).getName() == "holly does some fun stuff"
+            it 'does a final thing', {
+                step += 1
+                assert 3 == step
+            }
+        }
     }
 
     @Test
-    public void itExecutesExamplesForThePersona() {
-        Class specScriptClass = TestHelper.getClassForScript(personaJourneySpec)
+    public void itExecutesExamplesForSheAndHe() {
+        SpecRunner runner = new SpecRunner(SimplePronounJourneySpec)
 
-        TestHelper.assertSpecRuns(specScriptClass, 0, 1, true)
+        TestHelper.assertBehaviorPasses(runner, runner.getChildren().get(0))
+        assert step == 3
     }
 }

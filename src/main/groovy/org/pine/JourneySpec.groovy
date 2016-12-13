@@ -1,17 +1,15 @@
 package org.pine
 
-import org.pine.block.ContextBlock
+import org.pine.block.ExampleRunModifier
 
 trait JourneySpec extends Spec {
 
-    def describe(String personaName, String journeyName, Closure block) {
-        println "Persona: ${personaName}"
-        println "Describe ${journeyName}"
+    def she (String name, Closure block) {
+        addBehavior(name, block, ExampleRunModifier.NONE)
+    }
 
-        this.metaClass."${personaName}" << { name, exampleBlock -> it(name, exampleBlock) }
-
-        specVisitor.visitRootContext(new ContextBlock("${personaName} ${journeyName}"))
-        block(this.&it)
+    def he (String name, Closure block) {
+        addBehavior(name, block, ExampleRunModifier.NONE)
     }
 
 }
