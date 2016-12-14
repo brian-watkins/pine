@@ -202,12 +202,13 @@ abstract class ControllerSpecBase extends Script implements Spec {
 ### Journey Specs
 
 You can also write journey specs with Pine. Journey specs describe the
-path a user might take through an app. In contrast with normal specs,
-journey specs does describe the system so much as the actions of a user.
-A journey spec passes if all the actions described were able to be completed.
+path a user might take through an app. In contrast with normal specs, which
+describe the behavior of a component, journey specs describe the actions of a
+user as they interact with the system. A journey spec passes if all the actions
+described are completed.
 
 You write a journey spec with Pine by implementing the `JourneySpec` trait.
-It you are writing your specs in Groovy scripts, you can use the `org.pine.script.JourneySpecScript`
+It you are writing your specs as Groovy scripts, you can use the `org.pine.script.JourneySpecScript`
 class as your base script.
 
 Here's an example:
@@ -261,23 +262,23 @@ Notice a few things about this spec.
 
 + Journey specs describe a user's
 journey through the system (not the behavior of a component), so
-the describe method should indicate the persona and the goal of that
+the `describe` method should indicate the persona and the goal of that
 persona's journey.
-
-+ Each behavior block (the `she` and `it` methods) describe
-components of a journey. Unlike ordinary specs, a journey spec is typically
-composed of multiple behavior blocks.
 
 + Journey specs can use `she` and `he` as well as `it` to describe
 behaviors or tasks. Use `she` or `he` when referring to what the user does
 and `it` when describing how the system responds.
 
++ Each behavior block (the `she` and `it` methods in the example) describes
+a component of a journey. Unlike ordinary specs, a single journey spec is typically
+composed of multiple behavior blocks.
+
 + Journey specs can have `assume` blocks. All assume blocks are
-executed in order from outside to inside before any behavior blocks
+executed in order from outside in before any behavior blocks
 are executed.
 
 + Journey specs can also have `clean` blocks. These are
-also executed in order from outside to inside, after all behavior
+also executed in order from outside in, after all behavior
 blocks have been executed.
 
 + Note that `when` blocks individuate journeys. So the above
