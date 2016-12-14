@@ -138,11 +138,147 @@ Note: methods annotated with `@Assume` do not work with `@SpecDelegate`.
 
 ### Example: Writing Spring Controller Tests
 
-TBD
+Here's an example Spring controller test:
+
+```
+@BaseScript ControllerSpecBase specBase
+
+@Autowired @Field
+public FeedResourceRepository feedResourceRepository
+
+describe 'FeedController', {
+    when 'there is a feed with items', {
+        FeedResource savedFeed
+
+        assume {
+            FeedResource feed = new FeedResource()
+            feed.setFeedURL("http://my-fake-feed.com/feed.rss")
+            feed.setName("Super Feed")
+            savedFeed = feedResourceRepository.save(feed)
+        }
+
+        finalize {
+            feedResourceRepository.deleteAll()
+        }
+
+        it 'returns the items', {
+            mockMvc.perform(get("/feeds/" + savedFeed.getId() + "/items"))
+                    .andExpect(status().isOk())
+                    .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+                    .andExpect(jsonPath('$', hasSize(1)))
+                    .andExpect(jsonPath('$[0].title', equalTo("an item")))
+                    .andExpect(jsonPath('$[0].description', equalTo("item description")))
+        }
+    }
+}
+```
+
+and the referenced base script class:
+
+```
+@RunWith(SpecRunner)
+@SpringBootTest(classes = [Application, TestConfig])
+abstract class ControllerSpecBase extends Script implements Spec {
+
+    @ClassRule
+    public static final SpringClassRule SPRING_CLASS_RULE = new SpringClassRule()
+
+    @Rule
+    public final SpringMethodRule springMethodRule = new SpringMethodRule()
+
+    @Autowired
+    ConfigurableWebApplicationContext context
+
+    MockMvc mockMvc
+
+    @Assume
+    def setup() {
+        mockMvc = MockMvcBuilders.webAppContextSetup(context).build();
+    }
+
+}
+```
 
 ### Journey Specs
 
-You can also write journey specs with Pine. 
+You can also write journey specs with Pine. Journey specs describe the
+path a user might take through an app. In contrast with normal specs, 
+journey specs does describe the system so much as the actions of a user. 
+A journey spec passes if all the actions described were able to be completed. 
+
+You write a journey spec with Pine by implementing the `JourneySpec` trait. 
+It you are writing your specs in Groovy scripts, you can use the `org.pine.script.JourneySpecScript`
+class as your base script. 
+
+Here's an example:
+
+```
+@BaseScript JourneySpecScript spec
+
+describe 'Holly accomplishes several tasks', {
+
+    def nextTask
+
+    she 'logs into the app', {
+        doLogin()
+    }
+
+    she 'does the first task', {
+        doSomeTask()
+    }
+    
+    it 'shows the result', {
+        assert 1 == 1
+    }
+
+    she 'goes to the next task', {
+        goToTask(nextTask)
+    }
+
+    when 'she does task 2', {
+    	assume {
+            nextTask = "Have fun"
+    	}
+    
+        she 'runs a test', {
+            assert 1 == 1
+        }
+        
+    }
+    
+    when 'she does task 3', {
+        assume {
+            nextTask = "Go Swimming"
+        }
+
+        she 'does something else', {
+            assert 1 == 1
+        }
+    }
+```
+
+Notice a few things about this spec. 
+
+First, journey specs describe a user's
+journey through the system (not the behavior of a component), so 
+the describe method should indicate the persona and the goal of that
+persona's journey.
+ 
+Second, journey specs can use `she` and `he` as well as `it` to describe 
+behaviors or tasks. Use `she` or `he` when referring to what the user does
+and `it` when describing how the system responds. 
+
+Third, journey specs can have `assume` blocks. All assume blocks are
+executed in order from outside to inside before any behavior blocks
+are executed. Journey specs can also have `clean` blocks. These are
+also executed in order from outside to inside, after all behavior
+blocks have been executed. 
+
+Finally, note that `when` blocks individuate journeys. So the above
+example actually describes two journeys through the app, one which executes
+the first `when` block and one which executes the second. Think of 
+`when` blocks as branches leading to distinct journeys.  
+
 
 ### Development
 
