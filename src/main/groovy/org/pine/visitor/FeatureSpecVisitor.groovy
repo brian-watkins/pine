@@ -22,7 +22,7 @@ class FeatureSpecVisitor extends AbstractSpecVisitor {
     }
 
     @Override
-    def List<Behavior> getBehaviors () {
+    List<Behavior> getBehaviors () {
         List<Behavior> features = new ArrayList<>()
 
         List<ExampleBlock> examples = getExamplesForContext(root)
@@ -40,7 +40,7 @@ class FeatureSpecVisitor extends AbstractSpecVisitor {
         return features
     }
 
-    def List<ExampleBlock> getExamplesForContext(ContextBlock context) {
+    List<ExampleBlock> getExamplesForContext(ContextBlock context) {
         List<ExampleBlock> allExamples = (List<ExampleBlock>) context.examples
 
         context.children.each { c -> allExamples.addAll(getExamplesForContext(c)) }

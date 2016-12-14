@@ -9,12 +9,12 @@ import org.pine.testHelpers.TestHelper
 class JourneyTest {
 
     static int step = 0
-    static List<String> cleanSteps = new ArrayList<>()
+    static List<String> steps = new ArrayList<>()
 
     @Before
     public void setUp() {
         step = 0
-        cleanSteps.removeAll()
+        steps.clear()
     }
 
     class NoNameJourneySpec implements JourneySpec {
@@ -40,21 +40,18 @@ def step = 0
 it 'does one thing', {
     step += 1
     assert 1 == step
-    println "hey"
     assert "Bowling!" == getFun()
 }
 
 it 'does another thing', {
     step += 1
     assert 2 == step
-    println "hey 2"
     assert "Bowling!" == getFun()
 }
 
 it 'does a final thing', {
     step += 1
     assert 3 == step
-    println "hey 3"
     assert "Bowling!" == getFun()
 }
 
@@ -75,19 +72,16 @@ it 'does a final thing', {
         def journey () {
             it 'does one thing', {
                 step += 1
-                println "Hey ${step}"
                 assert 1 == step
             }
 
             it 'does another thing', {
                 step += 1
-                println "Hey ${step}"
                 assert 2 == step
             }
 
             it 'does a final thing', {
                 step += 1
-                println "Hey ${step}"
                 assert 3 == step
             }
         }
@@ -124,21 +118,18 @@ describe 'My Journey With a Delegate', {
     it 'does one thing', {
         step += 1
         assert 1 == step
-        println "hey"
         assert "Bowling!" == getFun()
     }
 
     it 'does another thing', {
         step += 1
         assert 2 == step
-        println "hey 2"
         assert "Bowling!" == getFun()
     }
 
     it 'does a final thing', {
         step += 1
         assert 3 == step
-        println "hey 3"
         assert "Bowling!" == getFun()
     }
 }
@@ -177,19 +168,16 @@ describe 'My Journey With Assumptions', {
     it 'does one thing', {
         step += 1
         assert 11 == step
-        println "hey ${step}"
     }
 
     it 'does another thing', {
         step += 1
         assert 12 == step
-        println "hey ${step}"
     }
 
     it 'does a final thing', {
         step += 1
         assert 13 == step
-        println "hey ${step}"
     }
 }
 '''
@@ -208,20 +196,17 @@ describe 'My Journey With Assumptions', {
         def journey () {
             it 'does one thing', {
                 step += 1
-                println "Hey ${step}"
                 assert 1 == step
             }
 
             when 'other things happen', {
                 it 'does another thing', {
                     step += 1
-                    println "Hey ${step}"
                     assert 2 == step
                 }
 
                 it 'does a final thing', {
                     step += 1
-                    println "Hey ${step}"
                     assert 3 == step
                 }
 
@@ -271,19 +256,16 @@ describe 'My Journey With When', {
         it 'does one thing', {
             step += 1
             assert 11 == step
-            println "hey ${step}"
         }
 
         it 'does another thing', {
             step += 1
             assert 12 == step
-            println "hey ${step}"
         }
 
         it 'does a final thing', {
             step += 1
             assert 13 == step
-            println "hey ${step}"
         }
 
     }
@@ -313,7 +295,6 @@ describe 'My Journey With Multiple Whens', {
         it 'does one thing', {
             step += 1
             assert 2 == step
-            println "hey ${step}"
         }
 
     }
@@ -323,7 +304,6 @@ describe 'My Journey With Multiple Whens', {
         it 'does another thing', {
             step += 4
             assert 5 == step
-            println "hey ${step}"
         }
 
     }
@@ -333,7 +313,6 @@ describe 'My Journey With Multiple Whens', {
         it 'does a final thing', {
             step += 7
             assert 8 == step
-            println "hey ${step}"
         }
 
     }
@@ -352,25 +331,30 @@ describe 'My Journey With Multiple Whens', {
 
 describe 'My Journey With Multiple Whens', {
     def step = 0
+    def expectedStep = 0
 
     assume {
         step = 10
+        getSteps().add("assume 1")
     }
 
     it "does one thing", {
         step += 1
-        assert 11 == step
+        assert expectedStep == step
+        getSteps().add("example 1")
     }
 
     when "step is increased by 1", {
 
         assume {
             step += 1
+            expectedStep = 12
+            getSteps().add("assume 2")
         }
 
         it 'does one thing', {
             assert 12 == step
-            println "hey ${step}"
+            getSteps().add("example 2")
         }
 
     }
@@ -379,11 +363,13 @@ describe 'My Journey With Multiple Whens', {
 
         assume {
             step += 4
+            expectedStep = 15
+            getSteps().add("assume 3")
         }
 
         it 'does another thing', {
             assert 15 == step
-            println "hey ${step}"
+            getSteps().add("example 3")
         }
 
     }
@@ -392,11 +378,13 @@ describe 'My Journey With Multiple Whens', {
 
         assume {
             step += 7
+            expectedStep = 18
+            getSteps().add("assume 4")
         }
 
         it 'does a final thing', {
             assert 18 == step
-            println "hey ${step}"
+            getSteps().add("example 4")
         }
 
     }
@@ -404,70 +392,56 @@ describe 'My Journey With Multiple Whens', {
 '''
 
     @Test
-    public void itRunsTheProperAssumptionsForEachWhenBlock() {
+    public void itRunsTheAssumptionsForEachJourneyBeforeExamples() {
         Class specScriptClass = TestHelper.getClassForScript(multipleWhenAssumptionsJourneySpec)
+        specScriptClass.metaClass.static.getSteps << { _ ->  steps }
 
         TestHelper.assertSpecRuns(specScriptClass, 0, 3, true)
+
+        assert steps ==
+                [ 'assume 1', 'assume 2', 'example 1', 'example 2',
+                  'assume 1', 'assume 3', 'example 1', 'example 3',
+                  'assume 1', 'assume 4', 'example 1', 'example 4' ]
     }
 
     String multipleCleanJourneySpec = '''
 @groovy.transform.BaseScript org.pine.script.JourneySpecScript spec
 
 describe 'My Journey With Multiple Cleans', {
-    def step = 0
-
-    assume {
-        step = 10
-    }
 
     clean {
         getCleanSteps().add('clean 1')
     }
 
     it "does one thing", {
-        step += 1
-        assert 11 == step
+        assert 1 == 1
     }
 
-    when "step is increased by 1", {
-
-        assume {
-            step += 1
-        }
+    when "things happen", {
 
         clean {
             getCleanSteps().add('clean 2')
         }
 
         it 'does one thing', {
-            assert 12 == step
-            println "hey ${step}"
+            assert 2 == 2
         }
 
     }
 
-    when "step is increased by 4", {
-
-        assume {
-            step += 4
-        }
+    when "something else happens", {
 
         clean {
             getCleanSteps().add('clean 3')
         }
 
         it 'does another thing', {
-            assert 15 == step
-            println "hey ${step}"
+            assert 3 == 3
         }
 
     }
 
-    when "step is increased by 7", {
-
-        assume {
-            step += 7
-        }
+    when "a final thing happens", {
 
         clean {
             getCleanSteps().add('clean 4')
@@ -478,8 +452,7 @@ describe 'My Journey With Multiple Cleans', {
         }
 
         it 'does a final thing', {
-            assert 18 == step
-            println "hey ${step}"
+            assert 4 == 4
         }
 
     }
@@ -487,13 +460,13 @@ describe 'My Journey With Multiple Cleans', {
 '''
 
     @Test
-    public void itExecutesCleansFromOutsideIn() {
+    void itExecutesCleansFromOutsideIn() {
         Class specScriptClass = TestHelper.getClassForScript(multipleCleanJourneySpec)
-        specScriptClass.metaClass.static.getCleanSteps << { _ ->  cleanSteps }
+        specScriptClass.metaClass.static.getCleanSteps << { _ ->  steps }
 
         TestHelper.assertSpecRuns(specScriptClass, 0, 3, true)
 
-        assert cleanSteps ==
+        assert steps ==
                 [ 'clean 1', 'clean 2', 'clean 1', 'clean 3', 'clean 1', 'clean 4', 'clean 5']
     }
 

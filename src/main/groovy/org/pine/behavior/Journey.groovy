@@ -1,6 +1,5 @@
 package org.pine.behavior
 
-import jdk.nashorn.internal.runtime.regexp.joni.Config
 import org.junit.runners.model.Statement
 import org.pine.Spec
 import org.pine.block.ConfigurationBlock
@@ -16,12 +15,12 @@ class Journey implements Behavior {
     List<String> contextNames
     ContextBlock rootContext
 
-    public Journey (List<String> contextNames, ContextBlock rootContext) {
+    Journey (List<String> contextNames, ContextBlock rootContext) {
         this.contextNames = contextNames
         this.rootContext = rootContext
     }
 
-    public String getName() {
+    String getName() {
         if (contextNames.size() > 1) {
             return rootContext.getName() +
                     ", when " + contextNames.subList(1, contextNames.size()).join(", and ")
@@ -30,31 +29,38 @@ class Journey implements Behavior {
         return rootContext.getName()
     }
 
-    public boolean shouldRun() {
+    boolean shouldRun() {
         return true
     }
 
     private List<ConfigurationBlock> getCleaners() {
-        List<ConfigurationBlock> cleaners = new ArrayList<>()
+        return getConfigurationBlocks { context -> context.cleaners }
+    }
+
+    private List<ConfigurationBlock> getAssumptions() {
+        return getConfigurationBlocks { context -> context.assumptions }
+    }
+
+    private List<ConfigurationBlock> getConfigurationBlocks(Closure block) {
+        List<ConfigurationBlock> blocks = new ArrayList<>()
 
         for (String name : contextNames) {
             ContextBlock g = findContextWithName(this.rootContext, name)
-            cleaners.addAll(g.cleaners)
+            blocks.addAll(block(g))
         }
 
-        return cleaners
+        return blocks
     }
 
-
-    public Statement createStatement(SpecClass specClass, Spec specInstance) {
+    Statement createStatement(SpecClass specClass, Spec specInstance) {
         Statement runStatement = new CleanStatement(specClass, specInstance, this.cleaners)
 
         for (String name : contextNames.reverse()) {
             ContextBlock g = findContextWithName(this.rootContext, name)
-
             runStatement = new BehaviorStatement(specClass, specInstance, getBlockForContext(g), runStatement)
-            runStatement = new AssumptionsStatement(specClass, specInstance, g.assumptions, runStatement)
         }
+
+        runStatement = new AssumptionsStatement(specClass, specInstance, this.assumptions, runStatement)
 
         return runStatement
     }

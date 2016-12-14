@@ -11,7 +11,7 @@ import org.pine.block.ContextBlock
 class JourneySpecVisitor extends AbstractSpecVisitor {
 
     @Override
-    public void visit(SpecClass specClass) {
+    void visit(SpecClass specClass) {
         FrameworkMethod specMethod = specClass.getAnnotatedMethods(Describe).stream()
                 .findFirst().orElse(null)
 
@@ -26,7 +26,7 @@ class JourneySpecVisitor extends AbstractSpecVisitor {
     }
 
     @Override
-    def List<Behavior> getBehaviors () {
+    List<Behavior> getBehaviors () {
         List<Journey> journeys = new ArrayList<>()
         for (ContextBlock block : getLeaves(root)) {
             journeys.add(new Journey(block.collectNames(), root))
