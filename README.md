@@ -259,7 +259,7 @@ describe 'Holly accomplishes several tasks', {
 
 Notice a few things about this spec.
 
-+ journey specs describe a user's
++ Journey specs describe a user's
 journey through the system (not the behavior of a component), so
 the describe method should indicate the persona and the goal of that
 persona's journey.
