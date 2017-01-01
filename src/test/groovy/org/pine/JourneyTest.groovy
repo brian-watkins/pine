@@ -27,7 +27,7 @@ class JourneyTest {
     @Test
     public void itSetsClassNameAsJourneyNameWhenNoneGiven() {
         SpecRunner runner = new SpecRunner(NoNameJourneySpec)
-        Spec spec = runner.getSpec()
+        Spec spec = runner.getPreparedSpec()
 
         assert spec.getBehaviors().get(0).getName() == 'org.pine.JourneyTest$NoNameJourneySpec'
     }
@@ -61,7 +61,7 @@ it 'does a final thing', {
     public void itSetsClassNameAsJourneyNameWhenNoneGivenInSpec() {
         Class specScriptClass = TestHelper.getClassForScript(noNameJourneySpecScript, "MyFunJourneySpec")
         SpecRunner runner = new SpecRunner(specScriptClass)
-        Spec spec = runner.getSpec()
+        Spec spec = runner.getPreparedSpec()
 
         assert spec.getBehaviors().get(0).getName() == 'MyFunJourneySpec'
     }
@@ -90,7 +90,7 @@ it 'does a final thing', {
     @Test
     public void describeAnnotationSetsTheJourneyName() {
         SpecRunner runner = new SpecRunner(SimpleJourneySpec)
-        Spec spec = runner.getSpec()
+        Spec spec = runner.getPreparedSpec()
 
         assert spec.getBehaviors().get(0).getName() == "My Journey"
     }
@@ -139,7 +139,7 @@ describe 'My Journey With a Delegate', {
     public void describeJourneySetsTheSpecDetails() {
         Class specScriptClass = TestHelper.getClassForScript(delegateJourneySpec)
         SpecRunner runner = new SpecRunner(specScriptClass)
-        Spec spec = runner.getSpec()
+        Spec spec = runner.getPreparedSpec()
 
         assert spec.getBehaviors().get(0).getName() == "My Journey With a Delegate"
     }
@@ -223,7 +223,7 @@ describe 'My Journey With Assumptions', {
     @Test
     public void journeyNameIncludesWhenBlocks() {
         SpecRunner runner = new SpecRunner(SimpleWhenJourneySpec)
-        Spec spec = runner.getSpec()
+        Spec spec = runner.getPreparedSpec()
 
         List<Behavior> behaviors = spec.getBehaviors()
         assert behaviors.get(0).getName() == "My When Journey, when other things happen, and that other thing happens"

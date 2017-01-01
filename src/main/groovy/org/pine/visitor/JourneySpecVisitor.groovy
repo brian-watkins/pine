@@ -1,6 +1,6 @@
 package org.pine.visitor
 
-import org.junit.runners.model.FrameworkMethod
+import org.pine.Spec
 import org.pine.util.SpecClass
 import org.pine.annotation.Describe
 import org.pine.behavior.Behavior
@@ -11,9 +11,8 @@ import org.pine.block.ContextBlock
 class JourneySpecVisitor extends AbstractSpecVisitor {
 
     @Override
-    void visit(SpecClass specClass) {
-        FrameworkMethod specMethod = specClass.getAnnotatedMethods(Describe).stream()
-                .findFirst().orElse(null)
+    void prepare(SpecClass specClass, Spec specInstance) {
+        super.prepare(specClass, specInstance)
 
         String specName = specMethod?.getAnnotation(Describe.class)?.value() ?: specClass.specClass.name
         root.setName(specName)

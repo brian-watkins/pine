@@ -1,5 +1,6 @@
 package org.pine
 
+import org.codehaus.groovy.runtime.DefaultGroovyMethods
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TestRule
@@ -113,32 +114,73 @@ it 'runs a spec', {
         TestHelper.assertSpecRuns(specScriptClass, 0, 1, true)
     }
 
-
     @Test
-    public void itUsesADelegateThatIsInitializedByARule () {
+    public void itResolvesDelegateReferencesInDescribeBlockClosure() {
         String script = '''
 import org.pine.annotation.*
 import org.pine.testHelpers.*
-import groovy.transform.*
 
-@BaseScript org.pine.script.SpecScript spec
+@groovy.transform.BaseScript org.pine.script.SpecScript spec
 
-@org.junit.Rule
-@Field public TestInjectRule rule = new TestInjectRule()
+@SpecDelegate @groovy.transform.Field
+public FunSpecDelegate delegate = new FunSpecDelegate()
 
-@TestInject
-@SpecDelegate @Field
-public FunSpecDelegate delegate
+def myFunThing = "swimming"
 
-describe 'some spec', {
-    it 'runs a spec', {
-        assert getFun() == "Bowling!"
+describe 'some test', {
+       
+    def someMethod = { 
+        myFunThing = getFun()
     }
+       
+    assume {
+        someMethod()
+    }
+    
+    it 'runs a spec', {
+        assert "Bowling!" == myFunThing
+    }
+    
 }
+
 '''
 
         Class specScriptClass = TestHelper.getClassForScript(script)
+        TestHelper.assertSpecRuns(specScriptClass, 0, 1, true)
+    }
 
+    @Test
+    public void itResolvesDelegateReferencesInWhenBlockClosure() {
+        String script = '''
+import org.pine.annotation.*
+import org.pine.testHelpers.*
+
+@groovy.transform.BaseScript org.pine.script.SpecScript spec
+
+@SpecDelegate @groovy.transform.Field
+public FunSpecDelegate delegate = new FunSpecDelegate()
+
+def myFunThing = "swimming"
+
+when 'something happens', {
+
+    def someMethod = { 
+        myFunThing = getFun()
+    }
+       
+    assume {
+        someMethod()
+    }
+    
+    it 'runs a spec', {
+        assert "Bowling!" == myFunThing
+    }
+    
+}
+
+'''
+
+        Class specScriptClass = TestHelper.getClassForScript(script)
         TestHelper.assertSpecRuns(specScriptClass, 0, 1, true)
     }
 

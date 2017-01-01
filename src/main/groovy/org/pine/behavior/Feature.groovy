@@ -1,29 +1,27 @@
 package org.pine.behavior
 
 import org.junit.runners.model.Statement
-import org.pine.Spec
-import org.pine.util.SpecClass
+import org.pine.statement.ConfigurationBlockStatement
 import org.pine.block.ConfigurationBlock
 import org.pine.block.ContextBlock
 import org.pine.block.ExampleBlock
-import org.pine.statement.AssumptionsStatement
+
 import org.pine.statement.BehaviorStatement
-import org.pine.statement.CleanStatement
 
 class Feature implements Behavior {
 
     ExampleBlock example
     boolean runnable = true
 
-    public Feature (ExampleBlock example) {
+    Feature (ExampleBlock example) {
         this.example = example
     }
 
-    public boolean shouldRun() {
+    boolean shouldRun() {
         return this.runnable
     }
 
-    public List<ConfigurationBlock> getAssumptions() {
+    List<ConfigurationBlock> getAssumptions() {
         gatherAssumptions(example.context)
     }
 
@@ -53,7 +51,7 @@ class Feature implements Behavior {
         return allCleaners
     }
 
-    public String getName() {
+    String getName() {
         getGroupDescription() + "it ${example.name}"
     }
 
@@ -65,10 +63,10 @@ class Feature implements Behavior {
         return ""
     }
 
-    Statement createStatement(SpecClass specClass, Spec specInstance) {
-        Statement runStatement = new CleanStatement(specClass, specInstance, this.cleaners)
-        runStatement = new BehaviorStatement(specClass, specInstance, example.block, runStatement)
-        runStatement = new AssumptionsStatement(specClass, specInstance, getAssumptions(), runStatement)
+    Statement createStatement() {
+        Statement runStatement = new ConfigurationBlockStatement(this.cleaners)
+        runStatement = new BehaviorStatement(example.block, runStatement)
+        runStatement = new ConfigurationBlockStatement(getAssumptions(), runStatement)
         return runStatement
     }
 }

@@ -3,18 +3,13 @@ package org.pine
 import org.junit.runner.Description
 import org.junit.runner.notification.RunNotifier
 import org.junit.runners.ParentRunner
-import org.junit.runners.model.FrameworkMethod
 import org.junit.runners.model.InitializationError
 import org.junit.runners.model.Statement
 import org.junit.runners.model.TestClass
-import org.pine.annotation.Describe
 import org.pine.behavior.Behavior
 import org.pine.statement.RulesStatement
 import org.pine.statement.SpecAssumptionsStatement
-import org.pine.exception.SpecNotFoundException
 import org.pine.util.SpecClass
-import org.pine.visitor.FeatureSpecVisitor
-import org.pine.visitor.JourneySpecVisitor
 import org.pine.visitor.SpecVisitor
 import org.pine.visitor.SpecVisitorFactory
 
@@ -23,12 +18,12 @@ class SpecRunner extends ParentRunner<Behavior> {
     SpecClass specClass
     def behaviors = []
 
-    public SpecRunner(Class<?> testClass) throws InitializationError {
+    SpecRunner(Class<?> testClass) throws InitializationError {
         super(testClass)
 
         this.specClass = (SpecClass) getTestClass()
 
-        Spec spec = getSpec()
+        Spec spec = getPreparedSpec()
         this.behaviors = spec.getBehaviors()
     }
 
@@ -37,25 +32,15 @@ class SpecRunner extends ParentRunner<Behavior> {
         return new SpecClass(testClass)
     }
 
-    public Spec getSpec() {
+    Spec getPreparedSpec() {
         Spec spec = (Spec) specClass.getSpecClass().newInstance()
         SpecVisitor specVisitor = SpecVisitorFactory.specVisitorForSpec(spec)
-        specVisitor.visit(specClass)
+        specVisitor.prepare(specClass, spec)
         spec.setSpecVisitor(specVisitor)
 
-        getSpecMethod(spec).invokeExplosively(spec)
+        spec.getSpecMethod().invokeExplosively(spec)
 
         return spec
-    }
-
-    private FrameworkMethod getSpecMethod(Spec spec) {
-        if (spec instanceof Script) {
-            return new FrameworkMethod(spec.class.getMethod("run", null))
-        }
-
-        return specClass.getAnnotatedMethods(Describe).stream()
-                .findFirst()
-                .orElseThrow(SpecNotFoundException.metaClass.&invokeConstructor)
     }
 
     @Override
@@ -77,16 +62,15 @@ class SpecRunner extends ParentRunner<Behavior> {
 
         println "Getting spec to run behavior: ${child.name}"
 
-        Spec spec = getSpec()
+        Spec spec = getPreparedSpec()
+        Behavior behavior = spec.findBehaviorWithName(child.name)
+        Description description = describeChild(behavior)
 
         println "Running behavior ..."
 
-        Behavior behavior = spec.getBehaviors().find { b -> b.name == child.name }
-        Description description = describeChild(behavior)
-
-        Statement childStatement = behavior.createStatement(specClass, spec)
+        Statement childStatement = behavior.createStatement()
         childStatement = new SpecAssumptionsStatement(specClass, spec, childStatement)
-        childStatement = new RulesStatement(specClass, spec, getSpecMethod(spec), description, childStatement)
+        childStatement = new RulesStatement(specClass, spec, description, childStatement)
 
         runLeaf(childStatement, description, notifier)
 

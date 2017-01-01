@@ -6,14 +6,15 @@ import org.pine.Spec
 import org.pine.util.SpecClass
 import org.pine.annotation.Assume
 
-class SpecAssumptionsStatement extends SpecStatement {
+class SpecAssumptionsStatement extends Statement {
 
     private Statement statement
     private List<FrameworkMethod> assumptionMethods
+    private Spec specInstance
 
-    public SpecAssumptionsStatement (SpecClass specClass, Spec specInstance, Statement statement) {
-        super(specClass, specInstance)
+    SpecAssumptionsStatement (SpecClass specClass, Spec specInstance, Statement statement) {
         this.statement = statement
+        this.specInstance = specInstance
         this.assumptionMethods = specClass.getAnnotatedMethods(Assume)
     }
 
@@ -21,7 +22,7 @@ class SpecAssumptionsStatement extends SpecStatement {
     void evaluate() throws Throwable {
         this.assumptionMethods.each { assumptionMethod ->
             println "Running assumption method: ${assumptionMethod.name}"
-            assumptionMethod.invokeExplosively(getSpecInstance())
+            assumptionMethod.invokeExplosively(specInstance)
         }
 
         this.statement.evaluate()

@@ -1,14 +1,12 @@
 package org.pine.behavior
 
 import org.junit.runners.model.Statement
-import org.pine.Spec
 import org.pine.block.ConfigurationBlock
-import org.pine.util.SpecClass
+import org.pine.statement.ConfigurationBlockStatement
 import org.pine.block.ContextBlock
 import org.pine.block.ExampleBlock
-import org.pine.statement.AssumptionsStatement
+
 import org.pine.statement.BehaviorStatement
-import org.pine.statement.CleanStatement
 
 class Journey implements Behavior {
 
@@ -52,15 +50,15 @@ class Journey implements Behavior {
         return blocks
     }
 
-    Statement createStatement(SpecClass specClass, Spec specInstance) {
-        Statement runStatement = new CleanStatement(specClass, specInstance, this.cleaners)
+    Statement createStatement() {
+        Statement runStatement = new ConfigurationBlockStatement(this.cleaners)
 
         for (String name : contextNames.reverse()) {
             ContextBlock g = findContextWithName(this.rootContext, name)
-            runStatement = new BehaviorStatement(specClass, specInstance, getBlockForContext(g), runStatement)
+            runStatement = new BehaviorStatement(getBlockForContext(g), runStatement)
         }
 
-        runStatement = new AssumptionsStatement(specClass, specInstance, this.assumptions, runStatement)
+        runStatement = new ConfigurationBlockStatement(this.assumptions, runStatement)
 
         return runStatement
     }
