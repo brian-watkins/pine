@@ -18,58 +18,7 @@ class JourneyTest {
         steps.clear()
     }
 
-    class NoNameJourneySpec implements JourneySpec {
-        @Describe
-        def mySpec() {
-
-        }
-    }
-
-    @Test
-    public void itSetsClassNameAsJourneyNameWhenNoneGiven() {
-        SpecRunner runner = new SpecRunner(NoNameJourneySpec)
-
-        JourneySpecVisitor visitor = runner.visitSpec(runner.getSpec())
-
-        assert visitor.getBehaviors().get(0).getName() == 'org.pine.JourneyTest$NoNameJourneySpec'
-    }
-
-    String noNameJourneySpecScript = '''
-@groovy.transform.BaseScript org.pine.script.JourneySpecScript spec
-
-def step = 0
-
-it 'does one thing', {
-    step += 1
-    assert 1 == step
-    assert "Bowling!" == getFun()
-}
-
-it 'does another thing', {
-    step += 1
-    assert 2 == step
-    assert "Bowling!" == getFun()
-}
-
-it 'does a final thing', {
-    step += 1
-    assert 3 == step
-    assert "Bowling!" == getFun()
-}
-
-'''
-
-    @Test
-    public void itSetsClassNameAsJourneyNameWhenNoneGivenInSpec() {
-        Class specScriptClass = TestHelper.getClassForScript(noNameJourneySpecScript, "MyFunJourneySpec")
-        SpecRunner runner = new SpecRunner(specScriptClass)
-
-        JourneySpecVisitor visitor = runner.visitSpec(runner.getSpec())
-
-        assert visitor.getBehaviors().get(0).getName() == 'MyFunJourneySpec'
-    }
-
-    static class SimpleJourneySpec implements JourneySpec {
+    protected static class SimpleJourneySpec implements JourneySpec {
 
         @Describe(value = "My Journey")
         def journey () {
@@ -91,16 +40,7 @@ it 'does a final thing', {
     }
 
     @Test
-    public void describeAnnotationSetsTheJourneyName() {
-        SpecRunner runner = new SpecRunner(SimpleJourneySpec)
-
-        JourneySpecVisitor visitor = runner.visitSpec(runner.getSpec())
-
-        assert visitor.getBehaviors().get(0).getName() == "My Journey"
-    }
-
-    @Test
-    public void itRunsAllItBlocksAsOneTest() {
+    void itRunsAllItBlocksAsOneTest() {
         SpecRunner runner = new SpecRunner(SimpleJourneySpec)
 
         TestHelper.assertBehaviorPasses(runner, runner.getChildren().get(0))
@@ -140,17 +80,7 @@ describe 'My Journey With a Delegate', {
 '''
 
     @Test
-    public void describeJourneySetsTheSpecDetails() {
-        Class specScriptClass = TestHelper.getClassForScript(delegateJourneySpec)
-        SpecRunner runner = new SpecRunner(specScriptClass)
-
-        JourneySpecVisitor visitor = runner.visitSpec(runner.getSpec())
-
-        assert visitor.getBehaviors().get(0).getName() == "My Journey With a Delegate"
-    }
-
-    @Test
-    public void itMakesTheDelegateAvailableThroughoutTheJourney() {
+    void itMakesTheDelegateAvailableThroughoutTheJourney() {
         Class specScriptClass = TestHelper.getClassForScript(delegateJourneySpec)
 
         TestHelper.assertSpecRuns(specScriptClass, 0, 1, true)
@@ -188,14 +118,14 @@ describe 'My Journey With Assumptions', {
 '''
 
     @Test
-    public void itRunsAllAssumptions() {
+    void itRunsAllAssumptions() {
         Class specScriptClass = TestHelper.getClassForScript(assumptionsJourneySpec)
 
         TestHelper.assertSpecRuns(specScriptClass, 0, 1, true)
     }
 
 
-    static class SimpleWhenJourneySpec implements JourneySpec {
+    protected static class SimpleWhenJourneySpec implements JourneySpec {
 
         @Describe("My When Journey")
         def journey () {
@@ -226,17 +156,7 @@ describe 'My Journey With Assumptions', {
     }
 
     @Test
-    public void journeyNameIncludesWhenBlocks() {
-        SpecRunner runner = new SpecRunner(SimpleWhenJourneySpec)
-
-        JourneySpecVisitor visitor = runner.visitSpec(runner.getSpec())
-
-        List<Behavior> behaviors = visitor.getBehaviors()
-        assert behaviors.get(0).getName() == "My When Journey, when other things happen, and that other thing happens"
-    }
-
-    @Test
-    public void itIncludesBehaviorsWithinWhenAsPartOfTheJourney() {
+    void itIncludesBehaviorsWithinWhenAsPartOfTheJourney() {
         SpecRunner runner = new SpecRunner(SimpleWhenJourneySpec)
 
         TestHelper.assertBehaviorPasses(runner, runner.getChildren().get(0))
@@ -279,7 +199,7 @@ describe 'My Journey With When', {
 '''
 
     @Test
-    public void itRunsAssumptionsWithinAWhenBlock() {
+    void itRunsAssumptionsWithinAWhenBlock() {
         Class specScriptClass = TestHelper.getClassForScript(whenAssumptionsJourneySpec)
 
         TestHelper.assertSpecRuns(specScriptClass, 0, 1, true)
@@ -326,7 +246,7 @@ describe 'My Journey With Multiple Whens', {
 '''
 
     @Test
-    public void itRunsOneTestForEachWhenBlock() {
+    void itRunsOneTestForEachWhenBlock() {
         Class specScriptClass = TestHelper.getClassForScript(multipleWhenJourneySpec)
 
         TestHelper.assertSpecRuns(specScriptClass, 0, 3, true)
@@ -398,7 +318,7 @@ describe 'My Journey With Multiple Whens', {
 '''
 
     @Test
-    public void itRunsTheAssumptionsForEachJourneyBeforeExamples() {
+    void itRunsTheAssumptionsForEachJourneyBeforeExamples() {
         Class specScriptClass = TestHelper.getClassForScript(multipleWhenAssumptionsJourneySpec)
         specScriptClass.metaClass.static.getSteps << { _ ->  steps }
 
@@ -477,7 +397,7 @@ describe 'My Journey With Multiple Cleans', {
     }
 
 
-    static class SimplePronounJourneySpec implements JourneySpec {
+    protected static class SimplePronounJourneySpec implements JourneySpec {
 
         @Describe(value = "My Journey With Pronouns")
         def journey () {
@@ -499,7 +419,7 @@ describe 'My Journey With Multiple Cleans', {
     }
 
     @Test
-    public void itExecutesExamplesForSheAndHe() {
+    void itExecutesExamplesForSheAndHe() {
         SpecRunner runner = new SpecRunner(SimplePronounJourneySpec)
 
         TestHelper.assertBehaviorPasses(runner, runner.getChildren().get(0))

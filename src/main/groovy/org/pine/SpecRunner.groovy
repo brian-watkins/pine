@@ -32,11 +32,11 @@ class SpecRunner extends ParentRunner<Behavior> {
         return new SpecClass(testClass)
     }
 
-    Spec getSpec () {
+    private Spec getSpec () {
         return (Spec) specClass.getSpecClass().newInstance()
     }
 
-    SpecVisitor visitSpec(Spec spec) {
+    private SpecVisitor visitSpec(Spec spec) {
         SpecVisitor specVisitor = SpecVisitorFactory.specVisitorForSpec(specClass)
         specVisitor.prepare(specClass, spec)
         spec.setSpecVisitor(specVisitor)
