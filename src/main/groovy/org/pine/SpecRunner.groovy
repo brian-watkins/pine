@@ -23,8 +23,8 @@ class SpecRunner extends ParentRunner<Behavior> {
 
         this.specClass = (SpecClass) getTestClass()
 
-        Spec spec = getPreparedSpec()
-        this.behaviors = spec.getBehaviors()
+        SpecVisitor specVisitor = visitSpec(getSpec())
+        this.behaviors = specVisitor.getBehaviors()
     }
 
     protected TestClass createTestClass(Class testClass) {
@@ -32,15 +32,17 @@ class SpecRunner extends ParentRunner<Behavior> {
         return new SpecClass(testClass)
     }
 
-    Spec getPreparedSpec() {
-        Spec spec = (Spec) specClass.getSpecClass().newInstance()
-        SpecVisitor specVisitor = SpecVisitorFactory.specVisitorForSpec(spec)
+    Spec getSpec () {
+        return (Spec) specClass.getSpecClass().newInstance()
+    }
+
+    SpecVisitor visitSpec(Spec spec) {
+        SpecVisitor specVisitor = SpecVisitorFactory.specVisitorForSpec(specClass)
         specVisitor.prepare(specClass, spec)
         spec.setSpecVisitor(specVisitor)
+        specVisitor.getSpecMethod().invokeExplosively(spec)
 
-        spec.getSpecMethod().invokeExplosively(spec)
-
-        return spec
+        return specVisitor
     }
 
     @Override
@@ -62,15 +64,17 @@ class SpecRunner extends ParentRunner<Behavior> {
 
         println "Getting spec to run behavior: ${child.name}"
 
-        Spec spec = getPreparedSpec()
-        Behavior behavior = spec.findBehaviorWithName(child.name)
+        Spec spec = getSpec()
+        SpecVisitor specVisitor = visitSpec(spec)
+
+        Behavior behavior = specVisitor.getBehaviorWithName(child.name)
         Description description = describeChild(behavior)
 
         println "Running behavior ..."
 
         Statement childStatement = behavior.createStatement()
         childStatement = new SpecAssumptionsStatement(specClass, spec, childStatement)
-        childStatement = new RulesStatement(specClass, spec, description, childStatement)
+        childStatement = new RulesStatement(specClass, spec, specVisitor.getSpecMethod(), description, childStatement)
 
         runLeaf(childStatement, description, notifier)
 

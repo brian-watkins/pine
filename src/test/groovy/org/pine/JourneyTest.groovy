@@ -5,6 +5,7 @@ import org.junit.Test
 import org.pine.annotation.Describe
 import org.pine.behavior.Behavior
 import org.pine.testHelpers.TestHelper
+import org.pine.visitor.JourneySpecVisitor
 
 class JourneyTest {
 
@@ -27,9 +28,10 @@ class JourneyTest {
     @Test
     public void itSetsClassNameAsJourneyNameWhenNoneGiven() {
         SpecRunner runner = new SpecRunner(NoNameJourneySpec)
-        Spec spec = runner.getPreparedSpec()
 
-        assert spec.getBehaviors().get(0).getName() == 'org.pine.JourneyTest$NoNameJourneySpec'
+        JourneySpecVisitor visitor = runner.visitSpec(runner.getSpec())
+
+        assert visitor.getBehaviors().get(0).getName() == 'org.pine.JourneyTest$NoNameJourneySpec'
     }
 
     String noNameJourneySpecScript = '''
@@ -61,9 +63,10 @@ it 'does a final thing', {
     public void itSetsClassNameAsJourneyNameWhenNoneGivenInSpec() {
         Class specScriptClass = TestHelper.getClassForScript(noNameJourneySpecScript, "MyFunJourneySpec")
         SpecRunner runner = new SpecRunner(specScriptClass)
-        Spec spec = runner.getPreparedSpec()
 
-        assert spec.getBehaviors().get(0).getName() == 'MyFunJourneySpec'
+        JourneySpecVisitor visitor = runner.visitSpec(runner.getSpec())
+
+        assert visitor.getBehaviors().get(0).getName() == 'MyFunJourneySpec'
     }
 
     static class SimpleJourneySpec implements JourneySpec {
@@ -90,9 +93,10 @@ it 'does a final thing', {
     @Test
     public void describeAnnotationSetsTheJourneyName() {
         SpecRunner runner = new SpecRunner(SimpleJourneySpec)
-        Spec spec = runner.getPreparedSpec()
 
-        assert spec.getBehaviors().get(0).getName() == "My Journey"
+        JourneySpecVisitor visitor = runner.visitSpec(runner.getSpec())
+
+        assert visitor.getBehaviors().get(0).getName() == "My Journey"
     }
 
     @Test
@@ -139,9 +143,10 @@ describe 'My Journey With a Delegate', {
     public void describeJourneySetsTheSpecDetails() {
         Class specScriptClass = TestHelper.getClassForScript(delegateJourneySpec)
         SpecRunner runner = new SpecRunner(specScriptClass)
-        Spec spec = runner.getPreparedSpec()
 
-        assert spec.getBehaviors().get(0).getName() == "My Journey With a Delegate"
+        JourneySpecVisitor visitor = runner.visitSpec(runner.getSpec())
+
+        assert visitor.getBehaviors().get(0).getName() == "My Journey With a Delegate"
     }
 
     @Test
@@ -223,9 +228,10 @@ describe 'My Journey With Assumptions', {
     @Test
     public void journeyNameIncludesWhenBlocks() {
         SpecRunner runner = new SpecRunner(SimpleWhenJourneySpec)
-        Spec spec = runner.getPreparedSpec()
 
-        List<Behavior> behaviors = spec.getBehaviors()
+        JourneySpecVisitor visitor = runner.visitSpec(runner.getSpec())
+
+        List<Behavior> behaviors = visitor.getBehaviors()
         assert behaviors.get(0).getName() == "My When Journey, when other things happen, and that other thing happens"
     }
 

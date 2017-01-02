@@ -8,7 +8,7 @@ import org.pine.behavior.Behavior
 import org.pine.behavior.Journey
 import org.pine.block.ContextBlock
 
-class JourneySpecVisitor extends AbstractSpecVisitor {
+class JourneySpecVisitor extends DelegatingSpecVisitor {
 
     @Override
     void prepare(SpecClass specClass, Spec specInstance) {
@@ -19,7 +19,8 @@ class JourneySpecVisitor extends AbstractSpecVisitor {
     }
 
     @Override
-    void visitRootContext(ContextBlock rootContext) {
+    void visitRootContext(ContextBlock rootContext, Closure block) {
+        super.visitRootContext(rootContext, block)
         this.root = rootContext
         this.currentContext = rootContext
     }

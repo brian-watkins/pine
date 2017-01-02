@@ -16,33 +16,14 @@ abstract class AbstractSpecVisitor implements SpecVisitor {
 
     protected ContextBlock root = new ContextBlock()
     protected ContextBlock currentContext = root
-    private Object specDelegate = null
     private FrameworkMethod specMethod = null
-
-    Object getSpecDelegate () {
-        return specDelegate
-    }
 
     FrameworkMethod getSpecMethod () {
         return specMethod
     }
 
     void prepare(SpecClass specClass, Spec specInstance) {
-        specDelegate = findSpecDelegate(specClass, specInstance)
         specMethod = findSpecMethod(specClass, specInstance)
-    }
-
-    private Object findSpecDelegate(SpecClass specClass, Spec specInstance) {
-        Object delegate = specClass.getAnnotatedFieldValues(specInstance, SpecDelegate, Object)
-                .stream().findFirst().orElse(null)
-
-        if (delegate == null) {
-            println "AbstractSpecVisitor found NO delegate"
-        } else {
-            println "AbstractSpecVisitor found delegate: ${specDelegate.getClass().getName()}"
-        }
-
-        return delegate
     }
 
     private FrameworkMethod findSpecMethod(SpecClass specClass, Spec spec) {
@@ -56,10 +37,11 @@ abstract class AbstractSpecVisitor implements SpecVisitor {
     }
 
     @Override
-    void visitRootContext(ContextBlock rootContext) { }
+    void visitRootContext(ContextBlock rootContext, Closure block) {
+    }
 
     @Override
-    void beginContext(ContextBlock context) {
+    void beginContext(ContextBlock context, Closure block) {
         currentContext.addChild(context)
         currentContext = context
     }
@@ -80,9 +62,13 @@ abstract class AbstractSpecVisitor implements SpecVisitor {
     }
 
     @Override
-    void visitCleanBlock(ConfigurationBlock block) {
-        currentContext.addCleaner(block)
+    void visitCleanBlock(ConfigurationBlock cleaner) {
+        currentContext.addCleaner(cleaner)
     }
 
     abstract List<Behavior> getBehaviors()
+
+    Behavior getBehaviorWithName(String name) {
+        return getBehaviors().find { b -> b.name == name }
+    }
 }

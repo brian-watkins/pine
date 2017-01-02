@@ -8,15 +8,15 @@ import org.pine.block.*
 
 interface SpecVisitor {
 
-    void beginContext(ContextBlock context)
-    void endContext(ContextBlock context)
     void prepare(SpecClass spec, Spec specInstance)
-    void visitRootContext(ContextBlock context)
+    void visitRootContext(ContextBlock context, Closure block)
+    void beginContext(ContextBlock context, Closure block)
+    void endContext(ContextBlock context)
     void visitAssumptionBlock(ConfigurationBlock assumptionBlock)
     void visit(ExampleBlock behaviorNode)
     void visitCleanBlock(ConfigurationBlock cleanBlock)
 
     List<Behavior> getBehaviors()
     FrameworkMethod getSpecMethod()
-    Object getSpecDelegate()
+    Behavior getBehaviorWithName(String name)
 }

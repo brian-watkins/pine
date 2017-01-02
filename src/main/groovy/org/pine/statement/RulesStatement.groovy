@@ -20,11 +20,11 @@ class RulesStatement extends Statement {
     private Description behaviorDescription
     private Spec specInstance
 
-    RulesStatement (SpecClass specClass, Spec specInstance, Description behaviorDescription, Statement statement) {
+    RulesStatement (SpecClass specClass, Spec specInstance, FrameworkMethod specMethod, Description behaviorDescription, Statement statement) {
         this.statement = statement
         this.testRules = getTestRules(specClass, specInstance)
         this.methodRules = getMethodRules(specClass, specInstance)
-        this.method = specInstance.getSpecMethod()
+        this.method = specMethod
         this.behaviorDescription = behaviorDescription
         this.specInstance = specInstance
     }

@@ -8,8 +8,8 @@ class ConfigurationBlockStatement extends Statement {
     private Statement statement
     private List<ConfigurationBlock> blocks
 
-    ConfigurationBlockStatement(List<ConfigurationBlock> assumptions) {
-        this(assumptions, null)
+    ConfigurationBlockStatement(List<ConfigurationBlock> blocks) {
+        this(blocks, null)
     }
 
     ConfigurationBlockStatement (List<ConfigurationBlock> blocks, Statement statement) {

@@ -8,11 +8,11 @@ class ContextBlock {
     List<ConfigurationBlock> cleaners = []
     List<ContextBlock> children = []
 
-    public ContextBlock() {
+    ContextBlock() {
         this.name = null
     }
 
-    public ContextBlock(String name) {
+    ContextBlock(String name) {
         this.name = name
     }
 
@@ -38,7 +38,7 @@ class ContextBlock {
         return children.size() > 0
     }
 
-    def List<String> collectNames() {
+    List<String> collectNames() {
         def names = parent?.collectNames() ?: []
         if (this.name) names << this.name
         return names

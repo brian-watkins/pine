@@ -8,7 +8,7 @@ import org.pine.block.ExampleBlock
 
 import static org.pine.block.ExampleRunModifier.FOCUSED
 
-class FeatureSpecVisitor extends AbstractSpecVisitor {
+class FeatureSpecVisitor extends DelegatingSpecVisitor {
 
     private boolean hasFocusedBehaviors = false
 
