@@ -56,4 +56,14 @@ class TestHelper {
         assert listener.testsFinished > 0
     }
 
+    public static void assertBehaviorFails(SpecRunner runner, Behavior behavior) {
+        SpecTestRunListener listener = new SpecTestRunListener()
+
+        RunNotifier runNotifier = new RunNotifier()
+        runNotifier.addFirstListener(listener)
+        runner.runChild(behavior, runNotifier)
+
+        assert listener.failures == 1
+        assert listener.testsFinished > 0
+    }
 }

@@ -396,6 +396,39 @@ describe 'My Journey With Multiple Cleans', {
                 [ 'clean 1', 'clean 2', 'clean 1', 'clean 3', 'clean 1', 'clean 4', 'clean 5']
     }
 
+    String failingCleanJourneySpec = '''
+@groovy.transform.BaseScript org.pine.script.JourneySpecScript spec
+
+describe 'My Journey With A Failure', {
+
+    clean {
+        getCleanSteps().add('clean 1')
+    }
+
+    clean {
+        getCleanSteps().add('clean 2')
+    }
+
+    it "does one thing", {
+        assert 1 == 1
+    }
+
+    it 'fails', {
+        assert 2 == 3
+    }
+}
+'''
+
+    @Test
+    void itExecutesCleansWhenTestFails() {
+        Class specScriptClass = TestHelper.getClassForScript(failingCleanJourneySpec)
+        specScriptClass.metaClass.static.getCleanSteps << { _ -> steps }
+
+        TestHelper.assertSpecRuns(specScriptClass, 1, 1, false)
+
+        assert steps ==
+                [ 'clean 1', 'clean 2' ]
+    }
 
     protected static class SimplePronounJourneySpec implements JourneySpec {
 

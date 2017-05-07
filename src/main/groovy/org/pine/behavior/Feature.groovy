@@ -7,6 +7,7 @@ import org.pine.block.ContextBlock
 import org.pine.block.ExampleBlock
 
 import org.pine.statement.BehaviorStatement
+import org.pine.statement.FinallyStatement
 
 class Feature implements Behavior {
 
@@ -64,8 +65,10 @@ class Feature implements Behavior {
     }
 
     Statement createStatement() {
-        Statement runStatement = new ConfigurationBlockStatement(this.cleaners)
-        runStatement = new BehaviorStatement(example.block, runStatement)
+        Statement cleanStatement = new ConfigurationBlockStatement(this.cleaners)
+        Statement behaviorStatement = new BehaviorStatement(example.block)
+
+        Statement runStatement = new FinallyStatement(behaviorStatement, cleanStatement)
         runStatement = new ConfigurationBlockStatement(getAssumptions(), runStatement)
         return runStatement
     }

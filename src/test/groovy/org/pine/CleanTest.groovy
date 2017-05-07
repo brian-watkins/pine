@@ -8,6 +8,7 @@ import org.pine.annotation.Describe
 import org.pine.annotation.SpecDelegate
 import org.pine.testHelpers.SpecTestRunListener
 
+import static org.pine.testHelpers.TestHelper.assertBehaviorFails
 import static org.pine.testHelpers.TestHelper.assertBehaviorPasses
 import static org.pine.testHelpers.TestHelper.assertSpecRuns
 
@@ -162,6 +163,43 @@ class CleanTest {
 
         assertBehaviorPasses(runner, runner.getChildren()[0])
         assert OrderRecorder.order == [ 'spec', 'clean 1', 'clean 2', 'clean 3', 'clean 4' ]
+    }
+
+    static class CleanFailureSpec implements Spec {
+
+        int someNumber = 0
+
+        @Describe("Clean Block Spec")
+        def spec() {
+
+            clean {
+                OrderRecorder.order.add("clean 1")
+                someNumber = 1
+            }
+
+            clean {
+                OrderRecorder.order.add("clean 2")
+            }
+
+            it 'runs a spec that fails', {
+                OrderRecorder.order.add("spec")
+                assert someNumber == 37
+            }
+
+            it 'runs another test', {
+                OrderRecorder.order.add("spec2")
+                assert someNumber == 0
+            }
+
+        }
+    }
+
+    @Test
+    public void itRunsCleanBlocksAfterATestFailure () {
+        SpecRunner runner = new SpecRunner(CleanFailureSpec)
+        assertBehaviorFails(runner, runner.getChildren()[0])
+
+        assert OrderRecorder.order == [ 'spec', 'clean 1', 'clean 2' ]
     }
 
 }

@@ -12,11 +12,15 @@ class BehaviorStatement extends Statement {
         this.block = block
     }
 
+    BehaviorStatement (Closure block) {
+        this(block, null)
+    }
+
     @Override
     void evaluate() throws Throwable {
         println "Running behavior block"
         this.block()
 
-        this.statement.evaluate()
+        this.statement?.evaluate()
     }
 }

@@ -7,6 +7,7 @@ import org.pine.block.ContextBlock
 import org.pine.block.ExampleBlock
 
 import org.pine.statement.BehaviorStatement
+import org.pine.statement.FinallyStatement
 
 class Journey implements Behavior {
 
@@ -51,13 +52,15 @@ class Journey implements Behavior {
     }
 
     Statement createStatement() {
-        Statement runStatement = new ConfigurationBlockStatement(this.cleaners)
+        Statement cleanStatement = new ConfigurationBlockStatement(this.cleaners)
 
+        Statement behaviorStatement = null
         for (String name : contextNames.reverse()) {
             ContextBlock g = findContextWithName(this.rootContext, name)
-            runStatement = new BehaviorStatement(getBlockForContext(g), runStatement)
+            behaviorStatement = new BehaviorStatement(getBlockForContext(g), behaviorStatement)
         }
 
+        Statement runStatement = new FinallyStatement(behaviorStatement, cleanStatement)
         runStatement = new ConfigurationBlockStatement(this.assumptions, runStatement)
 
         return runStatement
