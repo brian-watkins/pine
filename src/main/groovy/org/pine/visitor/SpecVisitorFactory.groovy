@@ -8,11 +8,9 @@ class SpecVisitorFactory {
 
     static SpecVisitor specVisitorForSpec(SpecClass specClass) {
         if (isJourneySpec(specClass.specClass)) {
-            print "Using Journey Spec Visitor"
             return new JourneySpecVisitor()
         }
 
-        println "Using feature spec visitor"
         return new FeatureSpecVisitor()
     }
 

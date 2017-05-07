@@ -21,7 +21,6 @@ class SpecAssumptionsStatement extends Statement {
     @Override
     void evaluate() throws Throwable {
         this.assumptionMethods.each { assumptionMethod ->
-            println "Running assumption method: ${assumptionMethod.name}"
             assumptionMethod.invokeExplosively(specInstance)
         }
 

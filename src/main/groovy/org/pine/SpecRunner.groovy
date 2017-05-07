@@ -28,7 +28,6 @@ class SpecRunner extends ParentRunner<Behavior> {
     }
 
     protected TestClass createTestClass(Class testClass) {
-        println "Creating spec class for runner from class: ${testClass.name}"
         return new SpecClass(testClass)
     }
 
@@ -62,22 +61,16 @@ class SpecRunner extends ParentRunner<Behavior> {
             return
         }
 
-        println "Getting spec to run behavior: ${child.name}"
-
         Spec spec = getSpec()
         SpecVisitor specVisitor = visitSpec(spec)
 
         Behavior behavior = specVisitor.getBehaviorWithName(child.name)
         Description description = describeChild(behavior)
 
-        println "Running behavior ..."
-
         Statement childStatement = behavior.createStatement()
         childStatement = new SpecAssumptionsStatement(specClass, spec, childStatement)
         childStatement = new RulesStatement(specClass, spec, specVisitor.getSpecMethod(), description, childStatement)
 
         runLeaf(childStatement, description, notifier)
-
-        println "Done running behavior"
     }
 }

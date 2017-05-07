@@ -8,7 +8,6 @@ trait Spec {
     SpecVisitor specVisitor
 
     def describe(String name, Closure block) {
-        println "Describe ${name}"
         specVisitor.visitRootContext(new ContextBlock(name), block)
 
         block(this.&it)
@@ -27,8 +26,6 @@ trait Spec {
     }
 
     def addBehavior (String name, Closure block, ExampleRunModifier runModifier) {
-        System.out.println("it ${name}")
-
         ExampleBlock node = new ExampleBlock()
         node.name = name
         node.block = block
@@ -38,13 +35,10 @@ trait Spec {
     }
 
     def assume (Closure block) {
-        System.out.println("assume")
-
         specVisitor.visitAssumptionBlock(new ConfigurationBlock(block))
     }
 
     def when (String name, Closure block) {
-        println "When ${name}"
         ContextBlock node = new ContextBlock(name)
         specVisitor.beginContext(node, block)
 
@@ -54,8 +48,6 @@ trait Spec {
     }
 
     def clean (Closure block) {
-        println "Clean"
-
         specVisitor.visitCleanBlock(new ConfigurationBlock(block))
     }
 

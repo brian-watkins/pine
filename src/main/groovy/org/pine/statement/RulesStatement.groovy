@@ -53,9 +53,7 @@ class RulesStatement extends Statement {
         Optional<Object> scriptDelegate = specClass.getAnnotatedFieldValues(spec, SpecDelegate, Object).stream().findFirst()
         if (scriptDelegate.present) {
             delegateRules = ReflectionUtils.getAnnotatedFieldValues(scriptDelegate.get().class, scriptDelegate.get(), Rule.class, TestRule.class)
-            println "Found ${delegateRules.size()} delegate rules"
         } else {
-            println "No delegate to look for rules in"
             delegateRules = new ArrayList<>()
         }
 

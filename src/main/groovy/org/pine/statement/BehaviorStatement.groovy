@@ -18,7 +18,6 @@ class BehaviorStatement extends Statement {
 
     @Override
     void evaluate() throws Throwable {
-        println "Running behavior block"
         this.block()
 
         this.statement?.evaluate()

@@ -20,7 +20,6 @@ class ConfigurationBlockStatement extends Statement {
     @Override
     void evaluate() throws Throwable {
         this.blocks.each { block ->
-            println "Running configuration block"
             block.block()
         }
 

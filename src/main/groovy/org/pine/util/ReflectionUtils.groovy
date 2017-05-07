@@ -17,11 +17,7 @@ class ReflectionUtils {
 
     private static Object getFieldValue(Field field, Object instance) {
         if (instance != null || Modifier.isStatic(field.getModifiers())) {
-
-            Object value = field.get(instance)
-            println "Getting instance of ${value} from instance: ${instance}"
-
-            return value
+            return field.get(instance)
         }
 
         return null;

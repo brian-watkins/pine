@@ -51,12 +51,6 @@ abstract class DelegatingSpecVisitor extends AbstractSpecVisitor {
         Object delegate = specClass.getAnnotatedFieldValues(specInstance, SpecDelegate, Object)
                 .stream().findFirst().orElse(null)
 
-        if (delegate == null) {
-            println "AbstractSpecVisitor found NO delegate"
-        } else {
-            println "AbstractSpecVisitor found delegate: ${specDelegate.getClass().getName()}"
-        }
-
         return delegate
     }
 
