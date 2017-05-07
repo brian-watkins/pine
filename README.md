@@ -294,3 +294,12 @@ To run the tests:
 ```
 $ ./gradlew clean test
 ```
+
+### Deploying to Maven
+
+```
+$ ./gradlew clean uploadArchives
+```
+
+Then, log in to Nexus, look for the staging repository called something like 
+`comgithubbrian-watkins-1000`. Click `Close`. Wait. If all goes well, click `Release`. 

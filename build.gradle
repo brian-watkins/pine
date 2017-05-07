@@ -1,8 +1,7 @@
-group 'org.pine'
-version '1.1-SNAPSHOT'
-
 apply plugin: 'groovy'
 apply plugin: 'java'
+apply plugin: 'maven'
+apply plugin: 'signing'
 
 sourceCompatibility = 1.8
 
@@ -21,6 +20,71 @@ test {
     afterSuite { desc, result ->
         if (!desc.parent) {
             println "Results: ${result.resultType} (${result.testCount} tests, ${result.successfulTestCount} successes, ${result.failedTestCount} failures, ${result.skippedTestCount} skipped)"
+        }
+    }
+}
+
+group = "com.github.brian-watkins"
+archivesBaseName = "pine"
+version = "1.1.0-SNAPSHOT"
+
+task javadocJar(type: Jar) {
+    classifier = 'javadoc'
+    from groovydoc
+}
+
+task sourcesJar(type: Jar) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+artifacts {
+    archives javadocJar, sourcesJar
+}
+
+signing {
+    sign configurations.archives
+}
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+
+            repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+                authentication(userName: ossrhUsername, password: ossrhPassword)
+            }
+
+            snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
+                authentication(userName: ossrhUsername, password: ossrhPassword)
+            }
+
+            pom.project {
+                name "${group}:${archivesBaseName}"
+                packaging 'jar'
+                description 'A JUnit test runner for writing behavior-driven specs'
+                url 'https://github.com/brian-watkins/pine'
+
+                scm {
+                    connection 'scm:git:git://github.com/brian-watkins/pine.git'
+                    developerConnection 'scm:git:ssh://github.com:brian-watkins/pine.git'
+                    url 'http://github.com/brian-watkins/pine/tree/master'
+                }
+
+                licenses {
+                    license {
+                        name 'MIT License'
+                        url 'http://www.opensource.org/licenses/mit-license.php'
+                    }
+                }
+
+                developers {
+                    developer {
+                        name 'Brian Watkins'
+                        email 'brian.watkins@gmail.com'
+                    }
+                }
+            }
         }
     }
 }
