@@ -4,15 +4,24 @@ Pine is a JUnit test runner that allows you to write specs in the style of RSpec
 
 ### Getting Started
 
-Currently, Pine is only available as a standalone jar. If you're using Gradle, here's how to add it as a dependency via your `build.gradle` file:
+If you're using Gradle, you'll need to add the Groovy Gradle plugin in your `build.gradle` file.
+Then, add Pine as a testing dependency:
 
 ```
 dependencies {
-	testCompile files('lib/pine-1.0-SNAPSHOT.jar')
+	testCompile group: 'com.github.brian-watkins', name: 'pine', version: '1.1.0'
 }
 ```
 
-Also, add Groovy as a dependency and the Groovy Gradle plugin. There's a [helpful plugin](https://github.com/bwatkinsPivotal/pine-intellij-plugin) to run Pine specs using Gradle via Intellij.
+Alternatively, you can build Pine locally with:
+
+```
+$ ./gradlew clean build
+```
+
+This will produce a jar in `build/libs/` that you can add to your project.
+
+There's also [helpful plugin](https://github.com/bwatkinsPivotal/pine-intellij-plugin) to run Pine specs using Gradle via Intellij.
 
 ### Writing Specs
 
@@ -301,5 +310,5 @@ $ ./gradlew clean test
 $ ./gradlew clean uploadArchives
 ```
 
-Then, log in to Nexus, look for the staging repository called something like 
-`comgithubbrian-watkins-1000`. Click `Close`. Wait. If all goes well, click `Release`. 
+Then, log in to Nexus, look for the staging repository called something like
+`comgithubbrian-watkins-1000`. Click `Close`. Wait. If all goes well, click `Release`.
