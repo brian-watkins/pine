@@ -10,9 +10,8 @@ repositories {
 }
 
 dependencies {
-    compile 'org.codehaus.groovy:groovy-all:2.3.11'
+    compile 'org.codehaus.groovy:groovy-all:2.4.11'
     compile group: 'junit', name: 'junit', version: '4.12'
-    testCompile group: 'junit', name: 'junit', version: '4.11'
     testCompile 'org.assertj:assertj-core:3.5.1'
 }
 
@@ -26,7 +25,7 @@ test {
 
 group = "com.github.brian-watkins"
 archivesBaseName = "pine"
-version = "1.1.0-SNAPSHOT"
+version = "1.1.1"
 
 task javadocJar(type: Jar) {
     classifier = 'javadoc'
