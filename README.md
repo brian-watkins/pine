@@ -9,7 +9,7 @@ Then, add Pine as a testing dependency:
 
 ```
 dependencies {
-	testCompile group: 'com.github.brian-watkins', name: 'pine', version: '1.1.0'
+	testCompile group: 'com.github.brian-watkins', name: 'pine', version: '1.1.1'
 }
 ```
 
