@@ -5,6 +5,7 @@ import org.junit.runners.model.TestClass
 import org.pine.util.ReflectionUtils
 
 import java.lang.annotation.Annotation
+import java.lang.reflect.Method
 import java.lang.reflect.Modifier
 import java.util.stream.Collectors
 
@@ -32,15 +33,15 @@ public class SpecClass extends TestClass {
     @Override
     public List<FrameworkMethod> getAnnotatedMethods() {
         return Arrays.asList(this.specClass.getMethods()).stream()
-                .filter({ method -> method.getAnnotations().size() > 0 })
-                .map({method -> new FrameworkMethod(method) })
+                .filter({ Method method -> method.getAnnotations().size() > 0 })
+                .map({ Method method -> new FrameworkMethod(method) })
                 .collect(Collectors.toList())
     }
 
     @Override
     public List<FrameworkMethod> getAnnotatedMethods(Class <? extends Annotation> annotationClass) {
         return getAnnotatedMethods().stream()
-                .filter({ method -> method.getMethod().isAnnotationPresent(annotationClass) })
+                .filter({ FrameworkMethod method -> method.getMethod().isAnnotationPresent(annotationClass) })
                 .collect(Collectors.toList())
     }
 
@@ -48,8 +49,8 @@ public class SpecClass extends TestClass {
     public <T> List<T> getAnnotatedMethodValues(Object specScriptInstance,
                                                 Class<? extends Annotation> annotationClass, Class<T> valueClass) {
         return getAnnotatedMethods(annotationClass).stream()
-                .filter({ method -> valueClass.isAssignableFrom(method.getReturnType()) })
-                .map({ method -> invokeAnnotatedMethod(method, specScriptInstance) })
+                .filter({ FrameworkMethod method -> valueClass.isAssignableFrom(method.getReturnType()) })
+                .map({ FrameworkMethod method -> invokeAnnotatedMethod(method, specScriptInstance) })
                 .collect(Collectors.toList())
     }
 

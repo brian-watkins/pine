@@ -9,8 +9,8 @@ class ReflectionUtils {
 
     public static <T> List<T> getAnnotatedFieldValues(Class clazz, Object instance, Class<? extends Annotation> annotationClass, Class<T> valueClass) {
         return Arrays.asList(clazz.getFields()).stream()
-                .filter({ field -> field.isAnnotationPresent(annotationClass) })
-                .map({ field -> getFieldValue(field, instance) })
+                .filter({ Field field -> field.isAnnotationPresent(annotationClass) })
+                .map({ Field field -> getFieldValue(field, instance) })
                 .filter({ fieldValue -> valueClass.isInstance(fieldValue) })
                 .collect(Collectors.toList())
     }

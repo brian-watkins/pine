@@ -4,6 +4,7 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.notification.RunNotifier
 import org.pine.annotation.Describe
+import org.pine.behavior.Behavior
 import org.pine.testHelpers.SpecTestRunListener
 import org.pine.exception.SpecNotFoundException
 
@@ -30,14 +31,14 @@ class SpecRunnerTest {
 
     @Test
     void itReadsASpecFromAGroovyScript () {
-        List<Spec> specs = runner.getChildren()
+        List<Behavior> specs = runner.getChildren()
 
         assertThat(specs.size()).isEqualTo(1)
     }
 
     @Test
     void itGetsTheDescriptionOfTheSpec () {
-        List<Spec> specs = runner.getChildren()
+        List<Behavior> specs = runner.getChildren()
 
         assert runner.describeChild(specs.get(0)).getDisplayName() == 'it understands basic arithmetic(org.pine.SpecRunnerTest$SpecRunnerSpec)'
     }

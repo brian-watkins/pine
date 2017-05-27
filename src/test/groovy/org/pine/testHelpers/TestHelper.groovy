@@ -22,12 +22,12 @@ class TestHelper {
     }
 
     public static void assertSpecRuns (Class spec, int failureCount, int runCount, int ignoreCount, boolean wasSuccessful) {
-        JUnitCore core = new JUnitCore();
-        Result result = core.run(spec);
+        JUnitCore core = new JUnitCore()
+        Result result = core.run(spec)
 
         if (result.failureCount > 0) {
             println "Failure ****************************************"
-            result.failures.each { failure -> println failure.message }
+            result.failures.each { failure -> println failure.exception.printStackTrace() }
             println "************************************************"
         }
 

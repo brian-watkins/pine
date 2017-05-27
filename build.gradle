@@ -23,6 +23,12 @@ test {
     }
 }
 
+compileGroovy {
+    configure(groovyOptions) {
+        configurationScript = file("$rootDir/config/groovy/compiler-config.groovy")
+    }
+}
+
 group = "com.github.brian-watkins"
 archivesBaseName = "pine"
 version = "1.1.1"

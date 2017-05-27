@@ -20,7 +20,7 @@ class ConfigurationBlockStatement extends Statement {
     @Override
     void evaluate() throws Throwable {
         this.blocks.each { block ->
-            block.block()
+            block.block.call()
         }
 
         this.statement?.evaluate()

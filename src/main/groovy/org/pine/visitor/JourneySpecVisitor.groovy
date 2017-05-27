@@ -27,7 +27,7 @@ class JourneySpecVisitor extends DelegatingSpecVisitor {
 
     @Override
     List<Behavior> getBehaviors () {
-        List<Journey> journeys = new ArrayList<>()
+        List<Behavior> journeys = new ArrayList<>()
         for (ContextBlock block : getLeaves(root)) {
             journeys.add(new Journey(block.collectNames(), root))
         }

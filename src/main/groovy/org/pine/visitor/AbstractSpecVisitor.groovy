@@ -3,7 +3,6 @@ package org.pine.visitor
 import org.junit.runners.model.FrameworkMethod
 import org.pine.Spec
 import org.pine.annotation.Describe
-import org.pine.annotation.SpecDelegate
 import org.pine.behavior.Behavior
 import org.pine.exception.SpecNotFoundException
 import org.pine.util.SpecClass
@@ -33,7 +32,7 @@ abstract class AbstractSpecVisitor implements SpecVisitor {
 
         return specClass.getAnnotatedMethods(Describe).stream()
                 .findFirst()
-                .orElseThrow(SpecNotFoundException.metaClass.&invokeConstructor)
+                .orElseThrow({ new SpecNotFoundException() })
     }
 
     @Override

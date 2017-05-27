@@ -39,7 +39,7 @@ class ContextBlock {
     }
 
     List<String> collectNames() {
-        def names = parent?.collectNames() ?: []
+        List<String> names = parent?.collectNames() ?: new ArrayList<String>()
         if (this.name) names << this.name
         return names
     }

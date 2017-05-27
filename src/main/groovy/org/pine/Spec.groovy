@@ -1,5 +1,7 @@
 package org.pine
 
+import groovy.transform.stc.ClosureParams
+import groovy.transform.stc.SecondParam
 import org.pine.visitor.SpecVisitor
 import org.pine.block.*
 
@@ -7,7 +9,7 @@ trait Spec {
 
     SpecVisitor specVisitor
 
-    def describe(String name, Closure block) {
+    def describe(String name, @ClosureParams(SecondParam) Closure block) {
         specVisitor.visitRootContext(new ContextBlock(name), block)
 
         block(this.&it)
@@ -38,7 +40,7 @@ trait Spec {
         specVisitor.visitAssumptionBlock(new ConfigurationBlock(block))
     }
 
-    def when (String name, Closure block) {
+    def when (String name, @ClosureParams(SecondParam) Closure block) {
         ContextBlock node = new ContextBlock(name)
         specVisitor.beginContext(node, block)
 

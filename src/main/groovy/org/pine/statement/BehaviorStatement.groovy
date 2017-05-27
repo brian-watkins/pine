@@ -18,7 +18,7 @@ class BehaviorStatement extends Statement {
 
     @Override
     void evaluate() throws Throwable {
-        this.block()
+        this.block.call()
 
         this.statement?.evaluate()
     }

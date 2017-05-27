@@ -33,19 +33,19 @@ class Journey implements Behavior {
     }
 
     private List<ConfigurationBlock> getCleaners() {
-        return getConfigurationBlocks { context -> context.cleaners }
+        return getConfigurationBlocks { ContextBlock context -> context.cleaners }
     }
 
     private List<ConfigurationBlock> getAssumptions() {
-        return getConfigurationBlocks { context -> context.assumptions }
+        return getConfigurationBlocks { ContextBlock context -> context.assumptions }
     }
 
-    private List<ConfigurationBlock> getConfigurationBlocks(Closure block) {
+    private List<ConfigurationBlock> getConfigurationBlocks(Closure<List<ConfigurationBlock>> block) {
         List<ConfigurationBlock> blocks = new ArrayList<>()
 
         for (String name : contextNames) {
             ContextBlock g = findContextWithName(this.rootContext, name)
-            blocks.addAll(block(g))
+            blocks.addAll(block.call(g))
         }
 
         return blocks
@@ -86,8 +86,8 @@ class Journey implements Behavior {
 
             contextBlock.examples.each({ ExampleBlock example ->
                 example.block.delegate = owner
-                example.block.resolveStrategy = DELEGATE_FIRST
-                example.block()
+                example.block.resolveStrategy = Closure.DELEGATE_FIRST
+                example.block.call()
             })
 
         }

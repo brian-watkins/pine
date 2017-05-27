@@ -7,6 +7,7 @@ import org.junit.runners.model.InitializationError
 import org.junit.runners.model.Statement
 import org.junit.runners.model.TestClass
 import org.pine.behavior.Behavior
+import org.pine.statement.BehaviorStatement
 import org.pine.statement.RulesStatement
 import org.pine.statement.SpecAssumptionsStatement
 import org.pine.util.SpecClass
@@ -16,7 +17,7 @@ import org.pine.visitor.SpecVisitorFactory
 class SpecRunner extends ParentRunner<Behavior> {
 
     SpecClass specClass
-    def behaviors = []
+    List<Behavior> behaviors = new ArrayList<Behavior>()
 
     SpecRunner(Class<?> testClass) throws InitializationError {
         super(testClass)
