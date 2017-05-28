@@ -46,7 +46,7 @@ public FunSpecDelegate delegate = new FunSpecDelegate()
 
 describe 'some spec', {
     when 'there is a delegate', {
-        it 'runs a spec that is aware ofthe delegate', {
+        it 'runs a spec that is aware of the delegate', {
             assert getFun() == "Bowling!"
         }
     }

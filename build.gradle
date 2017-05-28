@@ -31,7 +31,7 @@ compileGroovy {
 
 group = "com.github.brian-watkins"
 archivesBaseName = "pine"
-version = "1.1.1"
+version = "1.1.2"
 
 task javadocJar(type: Jar) {
     classifier = 'javadoc'

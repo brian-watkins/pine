@@ -21,7 +21,8 @@ $ ./gradlew clean build
 
 This will produce a jar in `build/libs/` that you can add to your project.
 
-There's also [helpful plugin](https://github.com/bwatkinsPivotal/pine-intellij-plugin) to run Pine specs using Gradle via Intellij.
+There's also a [helpful plugin](https://github.com/bwatkinsPivotal/pine-intellij-plugin) to run Pine specs using Gradle via Intellij.
+Search for `Pine` from within IntelliJ Plugin catalog to install it.
 
 ### Writing Specs
 
@@ -100,7 +101,11 @@ describe 'My Component', {
 ```
 
 
-`@SpecDelegate` -- Add this annotation to a field and the object belonging to this variable will be used as the delegate of the script closures (`it` blocks, `assume` blocks, and `clean` blocks). While this annotation can be used within any spec, it's especially useful within Groovy scripts. A Groovy script must inherit from the `Script` class, but sometimes it's useful when writing tests to extend from a different base class -- like when writing tests using Fluentlenium. Using the `@ScriptDelegate` annotation, you can call delegate method calls and property references to a class other than the base class. If a method call or property reference is not found in the delegate class, then the base class will be searched.
+`@SpecDelegate` -- Add this annotation to a field and the object belonging to this variable will be used as the delegate of the script closures (`it` blocks, `assume` blocks, and `clean` blocks). This means that your spec can call methods or access properties of the delegate class just as if
+they belonged to the spec class itself.
+
+While this annotation can be used within any spec, it's especially useful within Groovy scripts. A Groovy script must inherit from the `Script` class, but sometimes it's useful when writing tests to extend from a different base class -- like when writing tests using Fluentlenium. The
+`@SpecDelegate` annotation makes methods and properties from another class available to your spec without the need for subclassing that class.
 
 ```
 @BaseScript SpecScript spec
@@ -142,8 +147,45 @@ public class MySpec implements Spec {
 
 Use `@Assume` to annotate methods that should be run before each spec, prior to any `assume` blocks. This can be useful when putting setup code in a script base class, for example.
 
-
 Note: methods annotated with `@Assume` do not work with `@SpecDelegate`.  
+
+#### Type Checking
+
+If you use Pine to test Java code, you should be aware that Groovy's type system may lead to unexpected results.
+Because of the dynamic nature of the language, errors that you might expect to be caught by the compiler, like
+missing methods or misspelled variables, will only be reported at runtime.
+
+If you would prefer a more Java-esque experience, you can configure the Groovy compiler to perform
+type checks at compile time. Pine should work just fine when type checking is enabled; the only downside
+is that, when you write your specs, you will lose some of the flexibility that Groovy can provide.
+
+You can enable compile time type checking on a class by class basis with the `@TypeChecked` annotation. If your
+specs are in Groovy script files, you'll have to configure type checking globally:
+
+To your `build.gradle` add:
+
+```
+compileTestGroovy {
+    configure(groovyOptions) {
+        configurationScript = file("$rootDir/config/groovy/compiler-config.groovy")
+    }
+}
+```
+
+Then add the `compile-config.groovy` file:
+
+```
+import groovy.transform.TypeChecked
+
+withConfig(configuration) {
+    ast(TypeChecked, extensions: ['PineTypeCheckingExtension.groovy'])
+}
+```
+
+Note the `PineTypeCheckingExtension.groovy`. This is a type checking extension that helps the
+Groovy compiler resolve types when the `@SpecDelegate` annotation is used. If you don't use
+that annotation, you don't need to specify this extension.
+
 
 ### Example: Writing Spring Controller Tests
 
